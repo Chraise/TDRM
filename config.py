@@ -24,8 +24,6 @@ class Config:
     # ====================================================
     
     # SQLAlchemy 配置
-    # 注意：这里使用 f-string 在类定义时求值
-    # 如果修改了上面的数据库配置，URI 会自动更新
     SQLALCHEMY_DATABASE_URI = (
         f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
         f"?charset=utf8mb4"
