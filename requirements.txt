@@ -1,0 +1,52 @@
+alembic==1.17.2
+anyio==4.12.0
+babel==2.17.0
+blinker @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_11lor_igbs/croot/blinker_1737449046432/work
+brotlicffi @ file:///opt/miniconda3/conda-bld/brotlicffi_1762950225966/work
+certifi @ file:///opt/miniconda3/conda-bld/certifi_1763135328061/work/certifi
+cffi @ file:///opt/miniconda3/conda-bld/cffi_1761832774621/work
+charset-normalizer @ file:///opt/miniconda3/conda-bld/charset-normalizer_1761744840108/work
+click==8.3.1
+cryptography==46.0.3
+dnspython==2.8.0
+dominate==2.9.1
+elastic-transport==9.2.1
+elasticsearch==9.2.1
+email-validator==2.3.0
+Flask @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_c5fr3f66m2/croot/flask_1756453130186/work
+flask-babel==4.0.0
+Flask-Bootstrap==3.3.7.1
+Flask-Login @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_acrlrqvhk3/croot/flask-login_1716552213659/work
+Flask-Mail==0.10.0
+Flask-Migrate==4.1.0
+Flask-Moment==1.0.6
+Flask-SQLAlchemy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_214y9q2o4g/croot/flask-sqlalchemy_1712567274846/work
+Flask-WTF==1.2.2
+greenlet @ file:///opt/miniconda3/conda-bld/greenlet_1757405395214/work
+idna @ file:///opt/miniconda3/conda-bld/idna_1761912004936/work
+itsdangerous @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_00jdi1gu23/croot/itsdangerous_1716533346702/work
+Jinja2 @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_2cnn4kenrm/croot/jinja2_1741710859444/work
+langdetect==1.0.9
+logging==0.4.9.6
+Mako==1.3.10
+MarkupSafe==3.0.3
+packaging==25.0
+pycparser @ file:///opt/miniconda3/conda-bld/pycparser_1757496095146/work
+PyJWT==2.10.1
+PyMySQL @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_9f6v9ucvcy/croot/pymysql_1746768514026/work
+PySocks @ file:///opt/miniconda3/conda-bld/pysocks_1761753011230/work
+python-dateutil==2.9.0.post0
+python-dotenv==1.2.1
+pytz==2025.2
+requests @ file:///opt/miniconda3/conda-bld/requests_1762359592149/work
+setuptools==80.9.0
+six==1.17.0
+sniffio==1.3.1
+SQLAlchemy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_64hfvudz6k/croot/sqlalchemy_1756710322669/work
+sqlalchemy2-stubs==0.0.2a38
+typing_extensions @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_dffmcwqo6o/croot/typing_extensions_1756281471323/work
+urllib3 @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_95v32ztwo_/croot/urllib3_1750775480393/work
+visitor==0.1.3
+Werkzeug @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_87am5fxnsf/croot/werkzeug_1737448721856/work
+wheel==0.45.1
+WTForms==3.2.1
