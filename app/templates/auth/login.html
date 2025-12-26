@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="清华大学宿舍报修管理系统">
+    <meta name="author" content="陈泽卯，王培远">
+
+    <title>SB Admin 2 - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block" style="background-image: url({{ url_for('static', filename='img/login_bg.png') }}); background-position: center; background-size: cover;"></div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">欢迎回来！</h1>
+                                        <p class="mb-4">清华大学宿舍报修管理系统</p>
+                                    </div>
+
+                                    <form class="user" method="POST">
+                                        {{ form.hidden_tag() }}
+
+                                        {% with messages = get_flashed_messages() %}
+                                            {% if messages %}
+                                                <div class="alert alert-danger" role="alert">
+                                                    {{ messages[0] }}
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+
+                                        <!-- 账号输入框 -->
+                                        <div class="form-group">
+                                            <!-- 注意：这里的 form.account 对应 forms.py 里的字段名 -->
+                                            <!-- render_kw 用于传递 class 和 placeholder 属性 -->
+                                            {{ form.account(class="form-control form-control-user", placeholder="请输入学号/工号/管理员账号") }}
+                                        </div>
+
+                                        <!-- 密码输入框 -->
+                                        <div class="form-group">
+                                            {{ form.password(class="form-control form-control-user", placeholder="请输入密码") }}
+                                        </div>
+
+                                        <!-- 记住我 -->
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                {{ form.remember_me(class="custom-control-input") }}
+                                                <label class="custom-control-label" for="remember_me">记住我</label>
+                                            </div>
+                                        </div>
+
+                                        {{ form.submit(class="btn btn-primary btn-user btn-block") }}
+                                    </form>
+
+                                    <hr>
+                                    <div class="text-center">
+                                        <!-- 假设你有一个找回密码的路由叫 auth.reset_password_request -->
+                                        <a class="small" href="#">忘记密码?</a>
+                                    </div>
+                                    <div class="text-center">
+                                        <!-- 如果不允许学生自己注册（通常是导入），可以删掉这一行 -->
+                                        <a class="small" href="#">没有账号？联系宿管员</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 3. 修改 JS 路径 -->
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+
+</body>
+
+</html>
