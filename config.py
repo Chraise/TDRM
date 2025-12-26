@@ -21,3 +21,8 @@ class Config:
 
     # 分页大小
     POSTS_PER_PAGE = 10
+    
+    # 文件上传配置
+    UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 最大上传文件大小：16MB
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
