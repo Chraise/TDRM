@@ -60,7 +60,7 @@ clone:
 cloud-download:
   name: cloud-download-alt
 cloud-upload:
-  name: cloud-upload-alt
+  name: cloud-uploads-alt
 code-fork:
   name: code-branch
 comment-alt:

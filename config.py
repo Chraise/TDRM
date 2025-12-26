@@ -20,7 +20,7 @@ class Config:
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
 
     # 分页大小
-    POSTS_PER_PAGE = 10
+    POSTS_PER_PAGE = 5
     
     # 文件上传配置
     UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="Zemao Chen, Peiyuan Wang">
 
-    <title>TDRM - 学生端</title>
+    <title>TDRM - 我的工单</title>
 
     <!-- Custom fonts for this template-->
     <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -64,7 +64,7 @@
             </li>
 
             <!-- Nav Item - 我的工单 -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="{{ url_for('student.my_orders') }}">
                     <i class="fas fa-fw fa-list-alt"></i>
                     <span>我的工单</span></a>
@@ -136,123 +136,6 @@
                             </div>
                         </li>
 
-                        <!-- Nav Item - Alerts -->
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
-                            </a>
-                            <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
-                        </li>
-
-                        <!-- Nav Item - Messages -->
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
-                            </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="messagesDropdown">
-                                <h6 class="dropdown-header">
-                                    Message Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="{{ url_for('static', filename='img/undraw_profile_1.svg') }}"
-                                            alt="...">
-                                        <div class="status-indicator bg-success"></div>
-                                    </div>
-                                    <div class="font-weight-bold">
-                                        <div class="text-truncate">Hi there! I am wondering if you can help me with a
-                                            problem I've been having.</div>
-                                        <div class="small text-gray-500">Emily Fowler · 58m</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="{{ url_for('static', filename='img/undraw_profile_2.svg') }}"
-                                            alt="...">
-                                        <div class="status-indicator"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">I have the photos that you ordered last month, how
-                                            would you like them sent to you?</div>
-                                        <div class="small text-gray-500">Jae Chun · 1d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="{{ url_for('static', filename='img/undraw_profile_3.svg') }}"
-                                            alt="...">
-                                        <div class="status-indicator bg-warning"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Last month's report looks great, I am very happy with
-                                            the progress so far, keep up the good work!</div>
-                                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
-                                            alt="...">
-                                        <div class="status-indicator bg-success"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone
-                                            told me that people say this to all dogs, even if they aren't good...</div>
-                                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
-                            </div>
-                        </li>
-
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <!-- Nav Item - User Information -->
@@ -268,15 +151,11 @@
                                 aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
+                                    个人信息
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
+                                    设置
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -310,11 +189,132 @@
                     {% endwith %}
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">欢迎使用清华大学宿舍报修管理系统</h1>
+                    <h1 class="h3 mb-4 text-gray-800">我的工单</h1>
 
-                    {% block content %}
-                    <!-- 内容区域 -->
-                    {% endblock %}
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">工单列表</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>工单号</th>
+                                            <th>报修时间</th>
+                                            <th>主题</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if pagination.items %}
+                                            {% for order in pagination.items %}
+                                                <tr>
+                                                    <td>#{{ order.order_id }}</td>
+                                                    <td>{{ order.submit_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                                    <td>{{ order.title }}</td>
+                                                    <td>
+                                                        {% if order.status.value == 'Pending' %}
+                                                            <span class="badge badge-warning">待处理</span>
+                                                        {% elif order.status.value == 'Assigned' %}
+                                                            <span class="badge badge-info">已派单</span>
+                                                        {% elif order.status.value == 'InProgress' %}
+                                                            <span class="badge badge-primary">处理中</span>
+                                                        {% elif order.status.value == 'Completed' %}
+                                                            <span class="badge badge-success">已完成</span>
+                                                        {% elif order.status.value == 'Cancelled' %}
+                                                            <span class="badge badge-secondary">已取消</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">{{ order.status.value }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ url_for('student.order_detail', order_id=order.order_id) }}" class="btn btn-sm btn-info" title="查看工单详情">
+                                                            <i class="fas fa-info-circle"></i> 详情
+                                                        </a>
+                                                        {% if order.status.value == 'Completed' and not order.rating %}
+                                                            <a href="{{ url_for('student.rate_order', order_id=order.order_id) }}" class="btn btn-sm btn-success" title="评价工单">
+                                                                <i class="fas fa-star"></i> 去评价
+                                                            </a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center text-gray-500 py-4">
+                                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                                    <p class="mb-0">暂无工单记录</p>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            {% if pagination.pages > 1 %}
+                                <nav aria-label="工单分页导航">
+                                    <ul class="pagination justify-content-center">
+                                        {% if pagination.has_prev %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.prev_num, status=current_status if current_status != 'all' else None) }}" aria-label="上一页">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                    <span class="sr-only">上一页</span>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#" aria-label="上一页">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                    <span class="sr-only">上一页</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+
+                                        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                            {% if page_num %}
+                                                {% if page_num == pagination.page %}
+                                                    <li class="page-item active">
+                                                        <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="{{ url_for('student.my_orders', page=page_num, status=current_status if current_status != 'all' else None) }}">{{ page_num }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% else %}
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#">...</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if pagination.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.next_num, status=current_status if current_status != 'all' else None) }}" aria-label="下一页">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                    <span class="sr-only">下一页</span>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <a class="page-link" href="#" aria-label="下一页">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                    <span class="sr-only">下一页</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                                <div class="text-center text-gray-600 small mt-2">
+                                    显示第 {{ (pagination.page - 1) * pagination.per_page + 1 }} - {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }} 条，共 {{ pagination.total }} 条记录
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
                 </div>
                 <!-- /.container-fluid -->
@@ -351,10 +351,10 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">准备退出？</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">如果您准备退出系统，请点击下方的“退出登录”按钮。</div>
+                <div class="modal-body">如果您准备退出系统，请点击下方的"退出登录"按钮。</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
                     <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">退出登录</a>

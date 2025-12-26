@@ -449,7 +449,7 @@ angle-double-up:
       - arrows
       - caret
       - collapse
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f102
@@ -513,7 +513,7 @@ angle-up:
       - arrow
       - caret
       - collapse
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f106
@@ -779,7 +779,7 @@ arrow-circle-up:
   label: Arrow Circle Up
   search:
     terms:
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f0aa
@@ -830,7 +830,7 @@ arrow-up:
   search:
     terms:
       - forward
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f062
@@ -3057,7 +3057,7 @@ caret-square-up:
       - caret-square-o-up
       - collapse
       - triangle
-      - upload
+      - uploads
   styles:
     - solid
     - regular
@@ -3737,7 +3737,7 @@ chevron-circle-up:
     terms:
       - arrow
       - collapse
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f139
@@ -3795,7 +3795,7 @@ chevron-up:
     terms:
       - arrow
       - collapse
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f077
@@ -4047,7 +4047,7 @@ cloud:
       - fog
       - overcast
       - save
-      - upload
+      - uploads
       - weather
   styles:
     - solid
@@ -4186,10 +4186,10 @@ cloud-upload-alt:
   label: Alternate Cloud Upload
   search:
     terms:
-      - cloud-upload
+      - cloud-uploads
       - import
       - save
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f382
@@ -7193,7 +7193,7 @@ file-import:
       - copy
       - document
       - send
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f56f
@@ -11914,7 +11914,7 @@ long-arrow-alt-up:
   search:
     terms:
       - long-arrow-up
-      - upload
+      - uploads
   styles:
     - solid
   unicode: f30c

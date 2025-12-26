@@ -3,12 +3,13 @@ import uuid
 
 from sqlalchemy.orm import joinedload, selectinload
 from werkzeug.utils import secure_filename
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request, current_app, abort
 from flask_login import current_user
 import sqlalchemy as sa
+from sqlalchemy import select
 
 from app.student import bp
-from app.student.forms import RepairOrderForm
+from app.student.forms import RepairOrderForm, RateOrderForm
 from app.decorators import stu_required
 from app import db
 from app.models import RepairOrder, DormBuilding, OrderStatus, MaintenanceRecord
@@ -152,3 +153,90 @@ def my_orders():
     return render_template('student/my_orders.html',
                            pagination=pagination,
                            current_status=status_param or 'all')  # 传回给前端用于高亮Tab
+
+
+@bp.route('/order/detail/<int:order_id>', methods=['GET'])
+@stu_required
+def order_detail(order_id):
+    stmt = (
+        select(RepairOrder)
+        .where(RepairOrder.order_id == order_id)
+        .options(
+            joinedload(RepairOrder.building),
+            selectinload(RepairOrder.assigned_workers),
+            selectinload(RepairOrder.maintenance_records)
+            .joinedload(MaintenanceRecord.worker)
+        )
+    )
+    order = db.session.execute(stmt).scalar_one_or_none()
+
+    if not order:
+        abort(404, description="工单不存在")
+    if order.submitter_id != current_user.user_id:
+        abort(403, description="您没有权限查看此工单")
+
+    # 如果有维修记录被填写，进行排序
+    if order.maintenance_records:
+        order.maintenance_records.sort(key=lambda x: x.end_time or x.start_time, reverse=True)
+
+    can_rate = (order.status == OrderStatus.COMPLETED) and (order.rating is None)
+
+    return render_template(
+        'student/order_detail.html',
+        order=order,
+        can_rate=can_rate
+    )
+
+
+@bp.route('/order/cancel/<int:order_id>', methods=['POST', 'GET'])
+@stu_required
+def cancel_order(order_id):
+    """取消工单"""
+    order = db.session.get(RepairOrder, order_id)
+
+    if not order or order.submitter_id != current_user.user_id:
+        flash('无权操作此工单', 'danger')
+        return redirect(url_for('student.my_orders'))
+    if not order.is_pending:
+        flash('工单已处理或已完成，无法取消', 'warning')
+        return redirect(url_for('student.order_detail', order_id=order_id))
+
+    order.status = OrderStatus.CANCELLED
+    db.session.commit()
+    flash('工单已成功取消', 'success')
+
+    return redirect(url_for('student.order_detail', order_id=order_id))
+
+
+@bp.route('/order/rate/<int:order_id>', methods=['GET', 'POST'])
+@stu_required
+def rate_order(order_id):
+    """评价工单"""
+    order = db.session.get(RepairOrder, order_id)
+
+    if not order or order.submitter_id != current_user.user_id:
+        flash('无法访问该工单', 'danger')
+        return redirect(url_for('student.my_orders'))
+    if order.status != OrderStatus.COMPLETED: # 已完成+未评价
+        flash('工单尚未完成，无法评价', 'warning')
+        return redirect(url_for('student.order_detail', order_id=order_id))
+
+    if order.rating is not None:
+        flash('您已经评价过该工单', 'info')
+        return redirect(url_for('student.order_detail', order_id=order_id))
+
+    form = RateOrderForm()
+
+    if form.validate_on_submit():
+        try:
+            order.rating = form.rating.data
+            order.feedback = form.feedback.data
+            db.session.commit()
+
+            flash('感谢您的评价！', 'success')
+            return redirect(url_for('student.order_detail', order_id=order_id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'评价提交失败: {str(e)}', 'danger')
+
+    return render_template('student/rate_order.html', form=form, order=order)

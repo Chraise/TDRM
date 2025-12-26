@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, MultipleFileField
-from wtforms import StringField, TextAreaField, SubmitField, HiddenField
+from wtforms import StringField, TextAreaField, SubmitField, HiddenField, RadioField
 from wtforms.validators import DataRequired, Length, Optional
 
 class RepairOrderForm(FlaskForm):
@@ -66,3 +66,21 @@ class RepairOrderForm(FlaskForm):
         if not self.is_submitted(): # 这个设计可以保留用户输入的数据，而不会被刷新掉
             if repair_location is not None:
                 self.repair_location.data = repair_location
+
+
+class RateOrderForm(FlaskForm):
+    """工单评价表单"""
+    rating = RadioField('服务评分', choices=[
+        (5, '非常满意 (5星)'),
+        (4, '满意 (4星)'),
+        (3, '一般 (3星)'),
+        (2, '不满意 (2星)'),
+        (1, '极差 (1星)')
+    ], coerce=int, validators=[DataRequired(message='请选择评分')])
+
+    feedback = TextAreaField('反馈建议', validators=[
+        Optional(),
+        Length(max=255, message='反馈内容不能超过255个字符')
+    ])
+
+    submit = SubmitField('提交评价')

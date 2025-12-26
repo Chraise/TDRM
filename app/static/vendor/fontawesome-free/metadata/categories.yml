@@ -90,7 +90,7 @@ arrows:
     - chevron-right
     - chevron-up
     - cloud-download-alt
-    - cloud-upload-alt
+    - cloud-uploads-alt
     - compress-alt
     - compress-arrows-alt
     - download
@@ -146,7 +146,7 @@ arrows:
     - text-width
     - undo
     - undo-alt
-    - upload
+    - uploads
   label: Arrows
 audio-video:
   icons:
@@ -577,7 +577,7 @@ computers:
     - tablet
     - tablet-alt
     - tv
-    - upload
+    - uploads
   label: Computers
 construction:
   icons:
@@ -1223,7 +1223,7 @@ interfaces:
     - clone
     - cloud
     - cloud-download-alt
-    - cloud-upload-alt
+    - cloud-uploads-alt
     - coffee
     - cog
     - cogs
@@ -1250,7 +1250,7 @@ interfaces:
     - file-download
     - file-export
     - file-import
-    - file-upload
+    - file-uploads
     - filter
     - fingerprint
     - flag
@@ -1350,7 +1350,7 @@ interfaces:
     - trophy
     - undo
     - undo-alt
-    - upload
+    - uploads
     - user
     - user-alt
     - user-circle
