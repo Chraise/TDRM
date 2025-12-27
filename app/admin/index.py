@@ -1,5 +1,3 @@
-from crypt import methods
-
 from flask import render_template
 
 from app.admin import bp

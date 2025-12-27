@@ -52,6 +52,7 @@
 2.  **库存管理 (Inventory)**
     *   **Route:** `/admin/inventory`
     *   **CRUD:** 对 `spare_part` 表的增删改查。重点是**入库**（增加 `current_stock`）和设置**预警线**。
+3.  **用户管理**
 
 ---
 

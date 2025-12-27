@@ -1,0 +1,164 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<!-- Basic Card Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <!-- Account Field (Create mode only) -->
+            {% if form.account %}
+            <div class="form-group">
+                {{ form.account.label(class="font-weight-bold") }}
+                {{ form.account(class="form-control" + (" is-invalid" if form.account.errors else "")) }}
+                {% if form.account.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.account.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Username Field (Always) -->
+            <div class="form-group">
+                {{ form.username.label(class="font-weight-bold") }}
+                {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }}
+                {% if form.username.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.username.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Email Field (Always) -->
+            <div class="form-group">
+                {{ form.email.label(class="font-weight-bold") }}
+                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                {% if form.email.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Role Field (Always) -->
+            <div class="form-group">
+                {{ form.role.label(class="font-weight-bold") }}
+                {{ form.role(class="form-control" + (" is-invalid" if form.role.errors else ""), id="roleSelect") }}
+                {% if form.role.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.role.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password Field (Create mode only) -->
+            {% if form.password %}
+            <div class="form-group">
+                {{ form.password.label(class="font-weight-bold") }}
+                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }}
+                {% if form.password.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if form.password.description %}
+                    <small class="form-text text-muted">{{ form.password.description }}</small>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Status Field (Edit mode only) -->
+            {% if form.status %}
+            <div class="form-group">
+                {{ form.status.label(class="font-weight-bold") }}
+                {{ form.status(class="form-control" + (" is-invalid" if form.status.errors else "")) }}
+                {% if form.status.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.status.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Student Fields Container (building_id and room_no) -->
+            <div id="studentFields" style="display: none;">
+                <div class="form-group">
+                    {{ form.building_id.label(class="font-weight-bold") }}
+                    {{ form.building_id(class="form-control" + (" is-invalid" if form.building_id.errors else "")) }}
+                    {% if form.building_id.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.building_id.errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.room_no.label(class="font-weight-bold") }}
+                    {{ form.room_no(class="form-control" + (" is-invalid" if form.room_no.errors else "")) }}
+                    {% if form.room_no.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.room_no.errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> {{ form.submit.label.text }}
+                </button>
+                <a href="{{ url_for('admin.user_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> 取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('roleSelect');
+    const studentFields = document.getElementById('studentFields');
+    
+    function toggleStudentFields() {
+        if (roleSelect && studentFields) {
+            if (roleSelect.value === 'Student') {
+                studentFields.style.display = 'block';
+            } else {
+                studentFields.style.display = 'none';
+            }
+        }
+    }
+    
+    // Run on page load
+    toggleStudentFields();
+    
+    // Listen for changes
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleStudentFields);
+    }
+});
+</script>
+{% endblock %}

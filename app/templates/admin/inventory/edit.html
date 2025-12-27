@@ -1,0 +1,127 @@
+{% extends "admin/base.html" %}
+{% set active_page = 'inventory' %}
+
+{% block title %}TDRM - {{ title }}{% endblock %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+    <a href="{{ url_for('admin.inventory') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left fa-sm"></i> 返回
+    </a>
+</div>
+
+<!-- Form Container -->
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Basic Card Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">配件详细信息</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Row 1: part_name and spec -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.part_name.label(class="font-weight-bold") }}
+                                {{ form.part_name(class="form-control" + (" is-invalid" if form.part_name.errors else "")) }}
+                                {% if form.part_name.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.part_name.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.spec.label(class="font-weight-bold") }}
+                                {{ form.spec(class="form-control" + (" is-invalid" if form.spec.errors else "")) }}
+                                {% if form.spec.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.spec.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: unit, price, warning_line -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.unit.label(class="font-weight-bold") }}
+                                {{ form.unit(class="form-control" + (" is-invalid" if form.unit.errors else "")) }}
+                                {% if form.unit.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.unit.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.price.label(class="font-weight-bold") }}
+                                {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else "")) }}
+                                {% if form.price.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.price.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.warning_line.label(class="font-weight-bold") }}
+                                {{ form.warning_line(class="form-control" + (" is-invalid" if form.warning_line.errors else "")) }}
+                                {% if form.warning_line.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.warning_line.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: current_stock -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ form.current_stock.label(class="font-weight-bold") }}
+                                {{ form.current_stock(class="form-control" + (" is-invalid" if form.current_stock.errors else "")) }}
+                                <small class="form-text text-muted">初始库存用于新配件，或手动调整现有配件的库存数量。</small>
+                                {% if form.current_stock.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.current_stock.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

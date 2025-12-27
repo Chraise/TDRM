@@ -1,0 +1,254 @@
+{% extends "admin/base.html" %}
+{% set active_page = 'user_list' %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">用户管理</h1>
+    <a href="{{ url_for('admin.user_add') }}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus"></i> 新增用户
+    </a>
+</div>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">用户列表</h6>
+    </div>
+    <div class="card-body">
+        <!-- Search and Filter Area -->
+        <div class="row mb-3">
+            <!-- Search Bar -->
+            <div class="col-md-6">
+                <form method="GET" action="{{ url_for('admin.user_list') }}">
+                    <input type="hidden" name="role" value="{{ current_filter }}">
+                    <div class="input-group" style="max-width: 400px;">
+                        <input type="text" name="q" class="form-control" placeholder="搜索账号或姓名..." 
+                               value="{{ search_query }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Role Filter Buttons -->
+            <div class="col-md-6 text-right">
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('admin.user_list', role='all', q=search_query) }}" 
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == 'all' else 'btn-outline-primary' }}">
+                        全部
+                    </a>
+                    <a href="{{ url_for('admin.user_list', role='student', q=search_query) }}" 
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == 'student' else 'btn-outline-primary' }}">
+                        学生
+                    </a>
+                    <a href="{{ url_for('admin.user_list', role='worker', q=search_query) }}" 
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == 'worker' else 'btn-outline-primary' }}">
+                        工人
+                    </a>
+                    <a href="{{ url_for('admin.user_list', role='admin', q=search_query) }}" 
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == 'admin' else 'btn-outline-primary' }}">
+                        管理员
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>账户（学号/工号）</th>
+                        <th>姓名</th>
+                        <th>角色</th>
+                        <th>住址（楼宇-房间）</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.account }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.role.value == 'Student' %}
+                                <span class="badge badge-primary">学生</span>
+                            {% elif user.role.value == 'Worker' %}
+                                <span class="badge badge-info">工人</span>
+                            {% elif user.role.value == 'Admin' %}
+                                <span class="badge badge-danger">管理员</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.role.value == 'Student' and user.building %}
+                                {{ user.building.building_name }} - {{ user.room_no or '-' }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.status == 1 %}
+                                <span class="badge badge-success">正常</span>
+                            {% else %}
+                                <span class="badge badge-secondary">禁用</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <!-- Edit Button -->
+                                <a href="{{ url_for('admin.user_edit', user_id=user.user_id) }}" 
+                                   class="btn btn-sm btn-info" title="编辑">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <!-- Toggle Status Button -->
+                                <button type="button" class="btn btn-sm btn-warning" title="切换状态"
+                                        data-toggle="modal" data-target="#toggleStatusModal{{ user.user_id }}">
+                                    <i class="fas fa-{{ 'check-circle' if user.status == 1 else 'times-circle' }}"></i>
+                                </button>
+                                
+                                <!-- Reset Password Button -->
+                                <button type="button" class="btn btn-sm btn-secondary" title="重置密码"
+                                        data-toggle="modal" data-target="#resetPwdModal{{ user.user_id }}">
+                                    <i class="fas fa-key"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">暂无用户数据</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Confirmation Modals for each user -->
+        {% for user in users %}
+        <!-- Toggle Status Modal -->
+        <div class="modal fade" id="toggleStatusModal{{ user.user_id }}" tabindex="-1" role="dialog" 
+             aria-labelledby="toggleStatusModalLabel{{ user.user_id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="toggleStatusModalLabel{{ user.user_id }}">确认切换状态</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin.user_toggle_status', user_id=user.user_id) }}">
+                        {{ delete_form.hidden_tag() }}
+                        <div class="modal-body">
+                            <p>您确定要切换用户 <strong>{{ user.username }}</strong> ({{ user.account }}) 的状态吗？</p>
+                            <p class="text-muted">
+                                当前状态：<span class="badge badge-{{ 'success' if user.status == 1 else 'secondary' }}">
+                                    {{ '正常' if user.status == 1 else '禁用' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-warning">确认切换</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reset Password Modal -->
+        <div class="modal fade" id="resetPwdModal{{ user.user_id }}" tabindex="-1" role="dialog" 
+             aria-labelledby="resetPwdModalLabel{{ user.user_id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resetPwdModalLabel{{ user.user_id }}">确认重置密码</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin.user_reset_pwd', user_id=user.user_id) }}">
+                        {{ delete_form.hidden_tag() }}
+                        <div class="modal-body">
+                            <p>您确定要将用户 <strong>{{ user.username }}</strong> ({{ user.account }}) 的密码重置为默认密码吗？</p>
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> 密码将被重置为：<strong>123456</strong>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-danger">确认重置</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+            <nav aria-label="用户列表分页导航">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.user_list', page=pagination.prev_num, role=current_filter, q=search_query) }}" aria-label="上一页">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">上一页</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="上一页">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">上一页</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == pagination.page %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.user_list', page=page_num, role=current_filter, q=search_query) }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">...</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.user_list', page=pagination.next_num, role=current_filter, q=search_query) }}" aria-label="下一页">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">下一页</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="下一页">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">下一页</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="text-center text-gray-600 small mt-2">
+                显示第 {{ pagination.page }} 页，共 {{ pagination.pages }} 页，总计 {{ pagination.total }} 条记录
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

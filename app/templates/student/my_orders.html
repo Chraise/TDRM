@@ -1,378 +1,180 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+{% extends "student/base.html" %}
+{% set active_page = 'my_orders' %}
 
-<head>
+{% block title %}TDRM - 我的工单{% endblock %}
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Zemao Chen, Peiyuan Wang">
+{% block content %}
+<!-- Page Heading -->
+<h1 class="h3 mb-4 text-gray-800">我的工单</h1>
 
-    <title>TDRM - 我的工单</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
-
-</head>
-
-<body id="page-top">
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('student.index') }}">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-tools"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">TDRM <sup>学生</sup></div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">工单列表</h6>
+    </div>
+    <div class="card-body">
+        <!-- Status Filter Tabs -->
+        <ul class="nav nav-tabs mb-3" id="statusTabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('student.index') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>首页</span></a>
+                <a class="nav-link {% if current_status == 'all' or not current_status %}active font-weight-bold{% endif %}" 
+                   href="{{ url_for('student.my_orders') }}">
+                    全部
+                </a>
             </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                报修管理
-            </div>
-
-            <!-- Nav Item - 发起报修 -->
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('student.create_order') }}">
-                    <i class="fas fa-fw fa-plus-circle"></i>
-                    <span>发起报修</span></a>
+                <a class="nav-link {% if current_status == 'PENDING' %}active font-weight-bold{% endif %}" 
+                   href="{{ url_for('student.my_orders', status='PENDING') }}">
+                    待处理
+                </a>
             </li>
-
-            <!-- Nav Item - 我的工单 -->
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('student.my_orders') }}">
-                    <i class="fas fa-fw fa-list-alt"></i>
-                    <span>我的工单</span></a>
+            <li class="nav-item">
+                <a class="nav-link {% if current_status == 'ASSIGNED' %}active font-weight-bold{% endif %}" 
+                   href="{{ url_for('student.my_orders', status='ASSIGNED') }}">
+                    已派单
+                </a>
             </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
+            <li class="nav-item">
+                <a class="nav-link {% if current_status == 'IN_PROGRESS' %}active font-weight-bold{% endif %}" 
+                   href="{{ url_for('student.my_orders', status='IN_PROGRESS') }}">
+                    处理中
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_status == 'COMPLETED' %}active font-weight-bold{% endif %}" 
+                   href="{{ url_for('student.my_orders', status='COMPLETED') }}">
+                    已完成
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if current_status == 'CANCELLED' %}active font-weight-bold{% endif %}" 
+                   href="{{ url_for('student.my_orders', status='CANCELLED') }}">
+                    已取消
+                </a>
+            </li>
         </ul>
-        <!-- End of Sidebar -->
 
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>工单号</th>
+                        <th>报修时间</th>
+                        <th>主题</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if pagination.items %}
+                        {% for order in pagination.items %}
+                            <tr>
+                                <td>#{{ order.order_id }}</td>
+                                <td>{{ order.submit_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>{{ order.title }}</td>
+                                <td>
+                                    {% if order.status.value == 'Pending' %}
+                                        <span class="badge badge-warning">待处理</span>
+                                    {% elif order.status.value == 'Assigned' %}
+                                        <span class="badge badge-info">已派单</span>
+                                    {% elif order.status.value == 'InProgress' %}
+                                        <span class="badge badge-primary">处理中</span>
+                                    {% elif order.status.value == 'Completed' %}
+                                        <span class="badge badge-success">已完成</span>
+                                    {% elif order.status.value == 'Cancelled' %}
+                                        <span class="badge badge-secondary">已取消</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">{{ order.status.value }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('student.order_detail', order_id=order.order_id) }}" class="btn btn-sm btn-info" title="查看工单详情">
+                                        <i class="fas fa-info-circle"></i> 详情
+                                    </a>
+                                    {% if order.status.value == 'Completed' and not order.rating %}
+                                        <a href="{{ url_for('student.rate_order', order_id=order.order_id) }}" class="btn btn-sm btn-success" title="评价工单">
+                                            <i class="fas fa-star"></i> 去评价
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-gray-500 py-5">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p class="mb-0">
+                                    {% if current_status == 'all' or not current_status %}
+                                        暂无工单记录
+                                    {% else %}
+                                        此状态下没有找到工单
+                                    {% endif %}
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
 
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <!-- Topbar Search -->
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+            <nav aria-label="工单分页导航">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.prev_num, status=current_status if current_status != 'all' else None) }}" aria-label="上一页">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">上一页</span>
                             </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Search for..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
                         </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{current_user.username}}</span>
-                                <img class="img-profile rounded-circle"
-                                    src="{{ url_for('static', filename='img/undraw_profile.svg') }}">
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="上一页">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">上一页</span>
                             </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    个人信息
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    设置
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    退出登录
-                                </a>
-                            </div>
                         </li>
+                    {% endif %}
 
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Flash Messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                                    <i class="fas fa-{{ 'exclamation-circle' if category == 'error' or category == 'danger' else 'check-circle' if category == 'success' else 'info-circle' }} mr-2"></i>
-                                    {{ message }}
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">我的工单</h1>
-
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">工单列表</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>工单号</th>
-                                            <th>报修时间</th>
-                                            <th>主题</th>
-                                            <th>状态</th>
-                                            <th>操作</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% if pagination.items %}
-                                            {% for order in pagination.items %}
-                                                <tr>
-                                                    <td>#{{ order.order_id }}</td>
-                                                    <td>{{ order.submit_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                                                    <td>{{ order.title }}</td>
-                                                    <td>
-                                                        {% if order.status.value == 'Pending' %}
-                                                            <span class="badge badge-warning">待处理</span>
-                                                        {% elif order.status.value == 'Assigned' %}
-                                                            <span class="badge badge-info">已派单</span>
-                                                        {% elif order.status.value == 'InProgress' %}
-                                                            <span class="badge badge-primary">处理中</span>
-                                                        {% elif order.status.value == 'Completed' %}
-                                                            <span class="badge badge-success">已完成</span>
-                                                        {% elif order.status.value == 'Cancelled' %}
-                                                            <span class="badge badge-secondary">已取消</span>
-                                                        {% else %}
-                                                            <span class="badge badge-secondary">{{ order.status.value }}</span>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ url_for('student.order_detail', order_id=order.order_id) }}" class="btn btn-sm btn-info" title="查看工单详情">
-                                                            <i class="fas fa-info-circle"></i> 详情
-                                                        </a>
-                                                        {% if order.status.value == 'Completed' and not order.rating %}
-                                                            <a href="{{ url_for('student.rate_order', order_id=order.order_id) }}" class="btn btn-sm btn-success" title="评价工单">
-                                                                <i class="fas fa-star"></i> 去评价
-                                                            </a>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        {% else %}
-                                            <tr>
-                                                <td colspan="5" class="text-center text-gray-500 py-4">
-                                                    <i class="fas fa-inbox fa-2x mb-2"></i>
-                                                    <p class="mb-0">暂无工单记录</p>
-                                                </td>
-                                            </tr>
-                                        {% endif %}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Pagination -->
-                            {% if pagination.pages > 1 %}
-                                <nav aria-label="工单分页导航">
-                                    <ul class="pagination justify-content-center">
-                                        {% if pagination.has_prev %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.prev_num, status=current_status if current_status != 'all' else None) }}" aria-label="上一页">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                    <span class="sr-only">上一页</span>
-                                                </a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item disabled">
-                                                <a class="page-link" href="#" aria-label="上一页">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                    <span class="sr-only">上一页</span>
-                                                </a>
-                                            </li>
-                                        {% endif %}
-
-                                        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                                            {% if page_num %}
-                                                {% if page_num == pagination.page %}
-                                                    <li class="page-item active">
-                                                        <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
-                                                    </li>
-                                                {% else %}
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="{{ url_for('student.my_orders', page=page_num, status=current_status if current_status != 'all' else None) }}">{{ page_num }}</a>
-                                                    </li>
-                                                {% endif %}
-                                            {% else %}
-                                                <li class="page-item disabled">
-                                                    <a class="page-link" href="#">...</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-
-                                        {% if pagination.has_next %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.next_num, status=current_status if current_status != 'all' else None) }}" aria-label="下一页">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                    <span class="sr-only">下一页</span>
-                                                </a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item disabled">
-                                                <a class="page-link" href="#" aria-label="下一页">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                    <span class="sr-only">下一页</span>
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </nav>
-                                <div class="text-center text-gray-600 small mt-2">
-                                    显示第 {{ (pagination.page - 1) * pagination.per_page + 1 }} - {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }} 条，共 {{ pagination.total }} 条记录
-                                </div>
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == pagination.page %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('student.my_orders', page=page_num, status=current_status if current_status != 'all' else None) }}">{{ page_num }}</a>
+                                </li>
                             {% endif %}
-                        </div>
-                    </div>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">...</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
 
-                </div>
-                <!-- /.container-fluid -->
-
+                    {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.next_num, status=current_status if current_status != 'all' else None) }}" aria-label="下一页">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">下一页</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="下一页">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">下一页</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="text-center text-gray-600 small mt-2">
+                显示第 {{ (pagination.page - 1) * pagination.per_page + 1 }} - {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }} 条，共 {{ pagination.total }} 条记录
             </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; TDRM 2025</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
+        {% endif %}
     </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">准备退出？</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">如果您准备退出系统，请点击下方的"退出登录"按钮。</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
-                    <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">退出登录</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

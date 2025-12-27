@@ -4,7 +4,10 @@
 """
 from datetime import datetime, timezone, timedelta
 from app import create_app, db
-from app.models import User, DormBuilding, UserRole, RepairOrder, OrderStatus, MaintenanceRecord
+from app.models import User, DormBuilding, UserRole, RepairOrder, OrderStatus, MaintenanceRecord, SparePart, PartUsageDetail
+from decimal import Decimal
+
+from scripts_for_tests.clear_data import clear_data
 
 
 def init_data():
@@ -544,6 +547,21 @@ def init_data():
             )
             record_id_counter += 1
         
+        # 场景：InProgress状态，使用多个配件的维修记录
+        if order9 and worker2:
+            maintenance_records.append(
+                MaintenanceRecord(
+                    record_id=record_id_counter,
+                    order_id=order9.order_id,
+                    worker_id=worker2.user_id,
+                    start_time=now - timedelta(days=5),
+                    end_time=None,  # 只有start_time，维修中
+                    result_desc='使用疏通工具清理下水道，并使用防水胶带加固管道连接处',
+                    labor_cost=None
+                )
+            )
+            record_id_counter += 1
+        
         # 场景：已完成可评价的维修记录
         if order19 and worker2:
             maintenance_records.append(
@@ -595,6 +613,399 @@ def init_data():
         print(f"已创建 {len(orders)} 个报修工单")
         print(f"已创建 {len(maintenance_records)} 个维修记录")
         
+        # 创建配件库存测试数据
+        spare_parts = [
+            # 库存充足的配件
+            SparePart(
+                part_id=1,
+                part_name='水龙头',
+                spec='陶瓷阀芯',
+                unit='个',
+                price=Decimal('45.00'),
+                current_stock=25,
+                warning_line=10
+            ),
+            SparePart(
+                part_id=2,
+                part_name='电灯泡',
+                spec='LED 9W',
+                unit='个',
+                price=Decimal('12.50'),
+                current_stock=50,
+                warning_line=20
+            ),
+            SparePart(
+                part_id=3,
+                part_name='门锁',
+                spec='普通锁芯',
+                unit='个',
+                price=Decimal('35.00'),
+                current_stock=15,
+                warning_line=5
+            ),
+            # 库存不足的配件（需要预警）
+            SparePart(
+                part_id=4,
+                part_name='密封条',
+                spec='窗户密封条',
+                unit='米',
+                price=Decimal('8.50'),
+                current_stock=5,
+                warning_line=10
+            ),
+            SparePart(
+                part_id=5,
+                part_name='网络接口模块',
+                spec='RJ45',
+                unit='个',
+                price=Decimal('15.00'),
+                current_stock=3,
+                warning_line=10
+            ),
+            SparePart(
+                part_id=6,
+                part_name='腻子粉',
+                spec='普通型',
+                unit='公斤',
+                price=Decimal('25.00'),
+                current_stock=2,
+                warning_line=10
+            ),
+            SparePart(
+                part_id=7,
+                part_name='暖气阀门',
+                spec='DN20',
+                unit='个',
+                price=Decimal('28.00'),
+                current_stock=1,
+                warning_line=5
+            ),
+            # 正常库存的配件
+            SparePart(
+                part_id=8,
+                part_name='疏通工具',
+                spec='手动疏通器',
+                unit='个',
+                price=Decimal('18.00'),
+                current_stock=12,
+                warning_line=5
+            ),
+            SparePart(
+                part_id=9,
+                part_name='地漏盖',
+                spec='标准型',
+                unit='个',
+                price=Decimal('6.00'),
+                current_stock=30,
+                warning_line=10
+            ),
+            SparePart(
+                part_id=10,
+                part_name='电线',
+                spec='2.5平方',
+                unit='米',
+                price=Decimal('3.50'),
+                current_stock=100,
+                warning_line=20
+            ),
+            # 库存刚好在预警线的配件
+            SparePart(
+                part_id=11,
+                part_name='开关插座',
+                spec='五孔',
+                unit='个',
+                price=Decimal('8.00'),
+                current_stock=10,
+                warning_line=10
+            ),
+            # 无规格型号的配件
+            SparePart(
+                part_id=12,
+                part_name='螺丝钉',
+                spec=None,
+                unit='个',
+                price=Decimal('0.50'),
+                current_stock=200,
+                warning_line=50
+            ),
+            # 不同价格的配件
+            SparePart(
+                part_id=13,
+                part_name='空调滤网',
+                spec='标准型',
+                unit='个',
+                price=Decimal('35.00'),
+                current_stock=8,
+                warning_line=5
+            ),
+            SparePart(
+                part_id=14,
+                part_name='地板',
+                spec='复合地板',
+                unit='平方米',
+                price=Decimal('85.00'),
+                current_stock=20,
+                warning_line=10
+            ),
+            # 库存极低的配件（测试预警）
+            SparePart(
+                part_id=15,
+                part_name='门禁卡读卡器',
+                spec='标准型',
+                unit='个',
+                price=Decimal('120.00'),
+                current_stock=0,
+                warning_line=3
+            ),
+            # 更多常用配件
+            SparePart(
+                part_id=16,
+                part_name='水龙头',
+                spec='不锈钢阀芯',
+                unit='个',
+                price=Decimal('55.00'),
+                current_stock=18,
+                warning_line=8
+            ),
+            SparePart(
+                part_id=17,
+                part_name='电灯泡',
+                spec='LED 12W',
+                unit='个',
+                price=Decimal('15.00'),
+                current_stock=35,
+                warning_line=15
+            ),
+            SparePart(
+                part_id=18,
+                part_name='防水胶带',
+                spec='PVC',
+                unit='卷',
+                price=Decimal('12.00'),
+                current_stock=7,
+                warning_line=10
+            ),
+        ]
+        
+        for part in spare_parts:
+            db.session.add(part)
+        
+        db.session.commit()
+        
+        # 创建配件使用明细测试数据
+        # 查询已创建的维修记录和配件
+        record1 = MaintenanceRecord.query.filter_by(record_id=1).first()  # order4: 空调不制冷
+        record2 = MaintenanceRecord.query.filter_by(record_id=2).first()  # order5: 网络接口故障
+        record3 = MaintenanceRecord.query.filter_by(record_id=3).first()  # order6: 窗户关不严
+        record4 = MaintenanceRecord.query.filter_by(record_id=4).first()  # order10: 墙面裂缝
+        record5 = MaintenanceRecord.query.filter_by(record_id=5).first()  # order14: 第一次维修
+        record6 = MaintenanceRecord.query.filter_by(record_id=6).first()  # order14: 第二次维修
+        record7 = MaintenanceRecord.query.filter_by(record_id=7).first()  # order15: 马桶堵塞
+        record8 = MaintenanceRecord.query.filter_by(record_id=8).first()  # order16: 地漏反味
+        record9 = MaintenanceRecord.query.filter_by(record_id=9).first()  # order17: 插座无电
+        record10 = MaintenanceRecord.query.filter_by(record_id=10).first()  # order19: 地板翘起
+        record11 = MaintenanceRecord.query.filter_by(record_id=11).first()  # order20: 第一次维修
+        record12 = MaintenanceRecord.query.filter_by(record_id=12).first()  # order20: 第二次维修
+        
+        part1 = SparePart.query.filter_by(part_id=1).first()  # 水龙头
+        part2 = SparePart.query.filter_by(part_id=2).first()  # 电灯泡
+        part3 = SparePart.query.filter_by(part_id=3).first()  # 门锁
+        part4 = SparePart.query.filter_by(part_id=4).first()  # 密封条
+        part5 = SparePart.query.filter_by(part_id=5).first()  # 网络接口模块
+        part6 = SparePart.query.filter_by(part_id=6).first()  # 腻子粉
+        part7 = SparePart.query.filter_by(part_id=7).first()  # 暖气阀门
+        part8 = SparePart.query.filter_by(part_id=8).first()  # 疏通工具
+        part9 = SparePart.query.filter_by(part_id=9).first()  # 地漏盖
+        part10 = SparePart.query.filter_by(part_id=10).first()  # 电线
+        part11 = SparePart.query.filter_by(part_id=11).first()  # 开关插座
+        part13 = SparePart.query.filter_by(part_id=13).first()  # 空调滤网
+        part14 = SparePart.query.filter_by(part_id=14).first()  # 地板
+        part12 = SparePart.query.filter_by(part_id=12).first()  # 螺丝钉
+        
+        part_usage_details = []
+        usage_id_counter = 1
+        
+        # order4: 空调不制冷 - 使用空调滤网
+        if record1 and part13:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record1.record_id,
+                    part_id=part13.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+        
+        # order5: 网络接口故障 - 使用网络接口模块
+        if record2 and part5:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record2.record_id,
+                    part_id=part5.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+        
+        # order6: 窗户关不严 - 使用密封条
+        if record3 and part4:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record3.record_id,
+                    part_id=part4.part_id,
+                    quantity=2  # 使用2米密封条
+                )
+            )
+            usage_id_counter += 1
+        
+        # order10: 墙面裂缝 - 使用腻子粉
+        if record4 and part6:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record4.record_id,
+                    part_id=part6.part_id,
+                    quantity=1  # 使用1公斤腻子粉
+                )
+            )
+            usage_id_counter += 1
+        
+        # order14: 暖气不热 - 第一次维修未使用配件，第二次维修使用暖气阀门
+        if record6 and part7:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record6.record_id,
+                    part_id=part7.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+        
+        # order15: 马桶堵塞 - 使用疏通工具（不消耗，但记录使用）
+        if record7 and part8:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record7.record_id,
+                    part_id=part8.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+        
+        # order16: 地漏反味 - 使用地漏盖
+        if record8 and part9:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record8.record_id,
+                    part_id=part9.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+        
+        # order17: 插座无电 - 使用电线和开关插座
+        if record9 and part10 and part11:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record9.record_id,
+                    part_id=part10.part_id,
+                    quantity=3  # 使用3米电线
+                )
+            )
+            usage_id_counter += 1
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record9.record_id,
+                    part_id=part11.part_id,
+                    quantity=1  # 更换1个开关插座
+                )
+            )
+            usage_id_counter += 1
+        
+        # order19: 地板翘起 - 使用地板和螺丝钉
+        if record10 and part14 and part12:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record10.record_id,
+                    part_id=part14.part_id,
+                    quantity=2  # 使用2平方米地板
+                )
+            )
+            usage_id_counter += 1
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record10.record_id,
+                    part_id=part12.part_id,
+                    quantity=8  # 使用8个螺丝钉
+                )
+            )
+            usage_id_counter += 1
+        
+        # order20: 中央空调故障 - 第一次维修使用空调滤网，第二次维修可能使用其他配件
+        if record11 and part13:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=record11.record_id,
+                    part_id=part13.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+        
+        # 添加一些使用多个配件的维修记录（模拟复杂维修场景）
+        # order9: 下水道堵塞 - 使用疏通工具和防水胶带
+        order9_record = MaintenanceRecord.query.filter_by(order_id=9).first()
+        part18 = SparePart.query.filter_by(part_id=18).first()  # 防水胶带
+        if order9_record and part8:
+            part_usage_details.append(
+                PartUsageDetail(
+                    usage_id=usage_id_counter,
+                    record_id=order9_record.record_id,
+                    part_id=part8.part_id,
+                    quantity=1
+                )
+            )
+            usage_id_counter += 1
+            if part18:
+                part_usage_details.append(
+                    PartUsageDetail(
+                        usage_id=usage_id_counter,
+                        record_id=order9_record.record_id,
+                        part_id=part18.part_id,
+                        quantity=1  # 使用1卷防水胶带
+                    )
+                )
+                usage_id_counter += 1
+        
+        for usage_detail in part_usage_details:
+            db.session.add(usage_detail)
+        
+        db.session.commit()
+        print(f"已创建 {len(part_usage_details)} 条配件使用明细")
+        
+        # 统计库存状态
+        total_parts = len(spare_parts)
+        low_stock_parts = [p for p in spare_parts if p.current_stock < p.warning_line]
+        sufficient_stock_parts = [p for p in spare_parts if p.current_stock >= p.warning_line]
+        
+        print(f"\n已创建 {total_parts} 个配件")
+        print(f"  - 库存充足: {len(sufficient_stock_parts)} 个")
+        print(f"  - 库存不足（需要预警）: {len(low_stock_parts)} 个")
+        print(f"\n库存不足的配件列表：")
+        for part in low_stock_parts:
+            print(f"  - {part.part_name}{' (' + part.spec + ')' if part.spec else ''}: 当前库存 {part.current_stock}, 预警线 {part.warning_line}")
+        
         print("\n测试账号信息：")
         print("管理员: 10000001 / 123456")
         print("学生: 20210001-20210005 / 123456")
@@ -623,8 +1034,37 @@ def init_data():
         print("  - 测试多个维修记录: 14, 20")
         print("  - 测试多个指派工人: 13, 20")
         print("  - 测试取消工单功能: 1, 8, 11, 12 (Pending状态)")
+        print("\n库存管理测试场景：")
+        print("  ✓ 库存充足的配件（绿色badge）")
+        print("  ✓ 库存不足的配件（红色badge，预警）")
+        print("  ✓ 不同规格型号的配件（同一名称不同规格）")
+        print("  ✓ 不同单位的配件（个、米、公斤、平方米、卷）")
+        print("  ✓ 不同价格的配件（测试价格显示）")
+        print("  ✓ 无规格型号的配件（测试spec为None的情况）")
+        print("  ✓ 库存为0的配件（part_id: 15）")
+        print("  ✓ 库存刚好在预警线的配件（part_id: 11）")
+        print("\n推荐测试配件ID：")
+        print("  - 测试库存充足显示: 1, 2, 3, 8, 9, 10 (绿色badge)")
+        print("  - 测试库存不足预警: 4, 5, 6, 7, 15, 18 (红色badge)")
+        print("  - 测试搜索功能: 搜索'水龙头'（应该有2个结果：part_id 1和16）")
+        print("  - 测试搜索功能: 搜索'LED'（应该有2个结果：part_id 2和17）")
+        print("  - 测试编辑功能: 任意配件")
+        print("  - 测试补货功能: 库存不足的配件（4, 5, 6, 7, 15, 18）")
+        print("  - 测试删除功能: 确保没有关联维修记录的配件可以删除")
+        print("\n配件使用明细测试场景：")
+        print("  ✓ 单个配件使用（order4, order5, order6, order10, order15, order16）")
+        print("  ✓ 多个配件使用（order17: 电线+开关插座, order19: 地板+螺丝钉）")
+        print("  ✓ 复杂维修场景（order9: 疏通工具+防水胶带）")
+        print("  ✓ 多次维修记录（order14: 第二次维修使用暖气阀门）")
+        print("  ✓ 不同数量的配件使用（密封条2米, 电线3米, 地板2平方米, 螺丝钉8个）")
+        print("\n推荐测试维修记录ID：")
+        print("  - 测试单个配件使用: record_id 1-4, 7-8")
+        print("  - 测试多个配件使用: record_id 9 (order17), record_id 10 (order19)")
+        print("  - 测试复杂场景: order9的维修记录")
+        print("  - 测试配件关联查询: 查看某个配件的所有使用记录")
 
 
 if __name__ == '__main__':
+    clear_data()
     init_data()
 

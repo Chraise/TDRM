@@ -21,6 +21,7 @@ class Config:
 
     # 分页大小
     POSTS_PER_PAGE = 5
+    USERS_PER_PAGE = 10
     
     # 文件上传配置
     UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')

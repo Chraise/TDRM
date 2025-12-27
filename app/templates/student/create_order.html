@@ -1,310 +1,106 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+{% extends "student/base.html" %}
+{% set active_page = 'create_order' %}
 
-<head>
+{% block title %}TDRM - 申请报修{% endblock %}
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+{% block content %}
+<!-- Page Heading -->
+<h3 class="mb-4 text-gray-800">申请报修</h3>
 
-    <title>TDRM - 申请报修</title>
+<!-- 表单区域 -->
+<div class="row justify-content-center">
+    <div class="col-lg-8">
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
-
-</head>
-
-<body id="page-top">
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('student.index') }}">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-tools"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">TDRM <sup>学生</sup></div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('student.index') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>首页</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                报修管理
+        <!-- 卡片容器 -->
+        <div class="card shadow mb-4 border-left-primary">
+            <!-- Card Header -->
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">填写报修信息</h6>
             </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
 
-            <!-- Nav Item - 发起报修 -->
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('student.create_order') }}">
-                    <i class="fas fa-fw fa-plus-circle"></i>
-                    <span>发起报修</span></a>
-            </li>
+                    <!-- repair_building_id: 隐藏字段 -->
+                    {{ form.repair_building_id() }}
 
-            <!-- Nav Item - 我的工单 -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('student.my_orders') }}">
-                    <i class="fas fa-fw fa-list-alt"></i>
-                    <span>我的工单</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{current_user.username}}</span>
-                                <img class="img-profile rounded-circle"
-                                    src="{{ url_for('static', filename='img/undraw_profile.svg') }}">
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    个人信息
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    设置
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    退出登录
-                                </a>
+                    <!-- building_name: 只读字段 -->
+                    <div class="form-group">
+                        {{ form.building_name.label(class="font-weight-bold text-gray-700") }}
+                        {{ form.building_name(class="form-control") }}
+                        {% if form.building_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.building_name.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
                             </div>
-                        </li>
-
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Flash Messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                                    <i class="fas fa-{{ 'exclamation-circle' if category == 'error' or category == 'danger' else 'check-circle' if category == 'success' else 'info-circle' }} mr-2"></i>
-                                    {{ message }}
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                            {% endfor %}
                         {% endif %}
-                    {% endwith %}
+                    </div>
 
-                    <!-- Page Heading -->
-                    <h3 class="mb-4 text-gray-800">申请报修</h3>
-
-                    <!-- 表单区域 -->
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
-
-                            <!-- 卡片容器 -->
-                            <div class="card shadow mb-4 border-left-primary">
-                                <!-- Card Header -->
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">填写报修信息</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <form method="POST" enctype="multipart/form-data">
-                                        {{ form.hidden_tag() }}
-
-                                        <!-- repair_building_id: 隐藏字段 -->
-                                        {{ form.repair_building_id() }}
-
-                                        <!-- building_name: 只读字段 -->
-                                        <div class="form-group">
-                                            {{ form.building_name.label(class="font-weight-bold text-gray-700") }}
-                                            {{ form.building_name(class="form-control") }}
-                                            {% if form.building_name.errors %}
-                                                <div class="invalid-feedback d-block">
-                                                    {% for error in form.building_name.errors %}
-                                                        <div>{{ error }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-
-                                        <!-- repair_location: 必填字段 -->
-                                        <div class="form-group">
-                                            {{ form.repair_location.label(class="font-weight-bold text-gray-700") }}
-                                            <span class="text-danger">*</span>
-                                            {{ form.repair_location(class="form-control") }}
-                                            {% if form.repair_location.errors %}
-                                                <div class="invalid-feedback d-block">
-                                                    {% for error in form.repair_location.errors %}
-                                                        <div>{{ error }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-
-                                        <!-- title: 必填字段 -->
-                                        <div class="form-group">
-                                            {{ form.title.label(class="font-weight-bold text-gray-700") }}
-                                            <span class="text-danger">*</span>
-                                            {{ form.title(class="form-control") }}
-                                            {% if form.title.errors %}
-                                                <div class="invalid-feedback d-block">
-                                                    {% for error in form.title.errors %}
-                                                        <div>{{ error }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-
-                                        <!-- description: 文本域 -->
-                                        <div class="form-group">
-                                            {{ form.description.label(class="font-weight-bold text-gray-700") }}
-                                            {{ form.description(class="form-control") }}
-                                            {% if form.description.errors %}
-                                                <div class="invalid-feedback d-block">
-                                                    {% for error in form.description.errors %}
-                                                        <div>{{ error }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-
-                                        <!-- image_urls: 文件上传 -->
-                                        <div class="form-group">
-                                            {{ form.image_urls.label(class="font-weight-bold text-gray-700") }}
-                                            {{ form.image_urls(class="form-control-file") }}
-                                            <small class="form-text text-muted">支持多图</small>
-                                            {% if form.image_urls.errors %}
-                                                <div class="invalid-feedback d-block">
-                                                    {% for error in form.image_urls.errors %}
-                                                        <div>{{ error }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-
-                                        <!-- 提交按钮 -->
-                                        <div class="form-group mb-0">
-                                            {{ form.submit(class="btn btn-primary btn-user btn-block") }}
-                                        </div>
-                                    </form>
-                                </div>
+                    <!-- repair_location: 必填字段 -->
+                    <div class="form-group">
+                        {{ form.repair_location.label(class="font-weight-bold text-gray-700") }}
+                        <span class="text-danger">*</span>
+                        {{ form.repair_location(class="form-control") }}
+                        {% if form.repair_location.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.repair_location.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
                             </div>
-
-                        </div>
+                        {% endif %}
                     </div>
 
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; TDRM 2025</span>
+                    <!-- title: 必填字段 -->
+                    <div class="form-group">
+                        {{ form.title.label(class="font-weight-bold text-gray-700") }}
+                        <span class="text-danger">*</span>
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.title.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
-        </div>
-        <!-- End of Content Wrapper -->
+                    <!-- description: 文本域 -->
+                    <div class="form-group">
+                        {{ form.description.label(class="font-weight-bold text-gray-700") }}
+                        {{ form.description(class="form-control") }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.description.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
 
-    </div>
-    <!-- End of Page Wrapper -->
+                    <!-- image_urls: 文件上传 -->
+                    <div class="form-group">
+                        {{ form.image_urls.label(class="font-weight-bold text-gray-700") }}
+                        {{ form.image_urls(class="form-control-file") }}
+                        <small class="form-text text-muted">支持多图</small>
+                        {% if form.image_urls.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.image_urls.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">准备退出？</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">如果您准备退出系统，请点击下方的"退出登录"按钮。</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
-                    <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">退出登录</a>
-                </div>
+                    <!-- 提交按钮 -->
+                    <div class="form-group mb-0">
+                        {{ form.submit(class="btn btn-primary btn-user btn-block") }}
+                    </div>
+                </form>
             </div>
         </div>
+
     </div>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

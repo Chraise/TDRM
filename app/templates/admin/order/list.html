@@ -1,0 +1,621 @@
+{% extends "admin/base.html" %}
+{% set active_page = 'order_list' %}
+
+{% block styles %}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Select2 Bootstrap 4 Theme -->
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-4-theme@1.4.0/dist/select2-bootstrap4.min.css" rel="stylesheet" />
+<style>
+    /* Select2 自定义样式 - 修复文字显示和美化 */
+    #workerSelect + .select2-container {
+        width: 100% !important;
+    }
+
+    /* Select2 下拉框选项样式 - 修复文字截断问题 */
+    .select2-container--bootstrap4 .select2-results__option {
+        padding: 8px 12px !important;
+        line-height: 1.6 !important;
+        font-size: 0.95rem;
+        color: #6e707e;
+    }
+
+    /* 选项悬停效果 */
+    .select2-container--bootstrap4 .select2-results__option--highlighted {
+        background-color: #4e73df !important;
+        color: #fff !important;
+    }
+
+    /* 选中选项的样式 */
+    .select2-container--bootstrap4 .select2-results__option[aria-selected="true"] {
+        background-color: #eaecf4;
+        color: #4e73df;
+        font-weight: 500;
+    }
+
+    /* Select2 搜索框样式 */
+    .select2-container--bootstrap4 .select2-search--dropdown .select2-search__field {
+        padding: 8px 12px;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        font-size: 0.95rem;
+    }
+
+    /* Select2 下拉框容器样式 */
+    .select2-container--bootstrap4 .select2-dropdown {
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+    }
+
+    /* Select2 选择框显示区域样式 */
+    .select2-container--bootstrap4 .select2-selection {
+        min-height: calc(1.5em + 0.75rem + 2px) !important;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        padding: 2px 4px;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
+        background-color: #4e73df !important;
+        border: 1px solid #4e73df !important;
+        color: #fff;
+        padding: 4px 8px;
+        margin: 2px;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* 修复删除按钮样式 - 使其变成干净的白色"×" */
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
+        color: #fff !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        border-width: 0 !important;
+        padding: 0 !important;
+        margin: 0 6px 0 0 !important;
+        font-weight: bold;
+        font-size: 1.2em;
+        line-height: 1;
+        cursor: pointer;
+        width: auto !important;
+        height: auto !important;
+        min-width: auto !important;
+        min-height: auto !important;
+        display: inline-block;
+        vertical-align: middle;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fff !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        opacity: 0.8;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 占位符样式 */
+    .select2-container--bootstrap4 .select2-selection__placeholder {
+        color: #858796;
+        line-height: calc(1.5em + 0.75rem + 2px);
+    }
+
+    /* 下拉框结果区域最大高度和滚动条样式 */
+    .select2-container--bootstrap4 .select2-results__options {
+        max-height: 300px;
+    }
+
+    .select2-container--bootstrap4 .select2-results__options::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .select2-container--bootstrap4 .select2-results__options::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .select2-container--bootstrap4 .select2-results__options::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    .select2-container--bootstrap4 .select2-results__options::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* 修复 Select2 显示 "0" 的问题和布局问题 */
+    .select2-container--bootstrap4 .select2-selection__rendered {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__rendered {
+        padding-left: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    /* 修复输入框布局 - 确保输入框与标签在同一行 */
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-search--inline {
+        display: inline-flex !important;
+        flex: 1 1 auto;
+        min-width: 150px;
+        margin-top: 0 !important;
+        margin-left: 2px;
+        align-items: center;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-search--inline .select2-search__field {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        min-width: 150px;
+        height: auto !important;
+        line-height: 1.5 !important;
+        font-size: 0.875rem;
+        vertical-align: middle;
+        display: inline-block;
+    }
+
+    /* 确保占位符和输入框在同一行 */
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__placeholder {
+        display: inline-block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.5 !important;
+        vertical-align: middle;
+        position: static !important;
+    }
+
+    /* 确保选中项和输入框在同一行对齐 */
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__rendered > * {
+        vertical-align: middle;
+    }
+
+    /* Order Summary Card 样式 */
+    .order-summary-card {
+        background-color: #f8f9fc;
+        border: 1px solid #e3e6f0;
+        border-radius: 0.35rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .order-summary-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .order-summary-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .order-summary-item i {
+        width: 20px;
+        color: #5a5c69;
+        margin-right: 0.75rem;
+    }
+
+    .order-summary-item strong {
+        color: #5a5c69;
+        margin-right: 0.5rem;
+        min-width: 60px;
+    }
+
+    /* Modal 样式优化 */
+    #dispatchModal .modal-header {
+        border-bottom: 1px solid #e3e6f0;
+        padding: 1rem 1.5rem;
+    }
+
+    #dispatchModal .modal-body {
+        padding: 1.5rem;
+    }
+
+    #dispatchModal .modal-footer {
+        border-top: 1px solid #e3e6f0;
+        padding: 1rem 1.5rem;
+    }
+
+    /* 帮助文本样式 */
+    .form-help-text {
+        font-size: 0.875rem;
+        color: #858796;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">工单管理</h1>
+</div>
+
+<!-- Filter Tabs -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if current_filter == 'active' else '' }}" 
+                   href="{{ url_for('admin.order_list', filter='active') }}">
+                    <i class="fas fa-tasks"></i> 待处理工单
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if current_filter == 'all' else '' }}" 
+                   href="{{ url_for('admin.order_list', filter='all') }}">
+                    <i class="fas fa-history"></i> 全部历史
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>位置</th>
+                        <th>标题</th>
+                        <th>报修人</th>
+                        <th>提交时间</th>
+                        <th>状态</th>
+                        <th>指派的维修工</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if orders %}
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_id }}</td>
+                            <td>
+                                {% if order.building %}
+                                    {{ order.building.building_name }} - {{ order.repair_location }}
+                                {% else %}
+                                    {{ order.repair_location or '-' }}
+                                {% endif %}
+                            </td>
+                            <td>{{ order.title }}</td>
+                            <td>
+                                {% if order.submitter %}
+                                    {{ order.submitter.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ order.submit_time.strftime('%Y-%m-%d %H:%M') if order.submit_time else '-' }}</td>
+                            <td>
+                                {% if order.status == OrderStatus.PENDING %}
+                                    <span class="badge badge-warning">待处理</span>
+                                {% elif order.status == OrderStatus.ASSIGNED %}
+                                    <span class="badge badge-primary">已派单</span>
+                                {% elif order.status == OrderStatus.IN_PROGRESS %}
+                                    <span class="badge badge-info">处理中</span>
+                                {% elif order.status == OrderStatus.COMPLETED %}
+                                    <span class="badge badge-success">已完成</span>
+                                {% elif order.status == OrderStatus.CANCELLED %}
+                                    <span class="badge badge-secondary">已取消</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ order.status.value }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.assigned_workers and order.assigned_workers|length > 0 %}
+                                    {% for worker in order.assigned_workers %}
+                                        <span class="badge badge-info mr-1">{{ worker.username }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">未指派</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.status != OrderStatus.COMPLETED and order.status != OrderStatus.CANCELLED %}
+                                    <button type="button" class="btn btn-primary btn-sm" 
+                                            data-toggle="modal" 
+                                            data-target="#dispatchModal"
+                                            data-id="{{ order.order_id }}"
+                                            data-title="{{ order.title }}"
+                                            data-location="{% if order.building %}{{ order.building.building_name }} - {{ order.repair_location }}{% else %}{{ order.repair_location or '-' }}{% endif %}">
+                                        <i class="fas fa-user-check"></i> 派单
+                                    </button>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p>暂无工单数据</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+            <nav aria-label="工单列表分页导航" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.order_list', page=pagination.prev_num, filter=current_filter) }}" aria-label="上一页">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">上一页</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="上一页">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">上一页</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == pagination.page %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.order_list', page=page_num, filter=current_filter) }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">...</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.order_list', page=pagination.next_num, filter=current_filter) }}" aria-label="下一页">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">下一页</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="下一页">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">下一页</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="text-center text-gray-600 small mt-2">
+                显示第 {{ (pagination.page - 1) * pagination.per_page + 1 }} - {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }} 条，共 {{ pagination.total }} 条记录
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Dispatch Modal -->
+<div class="modal fade" id="dispatchModal" tabindex="-1" role="dialog" aria-labelledby="dispatchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dispatchModalLabel">
+                    <i class="fas fa-user-check mr-2"></i>指派维修工
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="dispatchForm" method="POST" action="">
+                {{ dispatch_form.hidden_tag() }}
+                <div class="modal-body">
+                    <!-- Order Summary Section -->
+                    <div class="order-summary-card">
+                        <h6 class="mb-3 text-gray-700">
+                            <i class="fas fa-clipboard-list mr-2"></i>工单信息
+                        </h6>
+                        <div class="order-summary-item">
+                            <i class="fas fa-hashtag"></i>
+                            <strong>工单ID:</strong>
+                            <span id="modalOrderId" class="text-gray-800">-</span>
+                        </div>
+                        <div class="order-summary-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>位置:</strong>
+                            <span id="modalOrderLocation" class="text-gray-800">-</span>
+                        </div>
+                        <div class="order-summary-item">
+                            <i class="fas fa-heading"></i>
+                            <strong>标题:</strong>
+                            <span id="modalOrderTitle" class="text-gray-800">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Worker Selection Form -->
+                    <div class="form-group">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="workerSelect" class="font-weight-bold text-gray-700 mb-0">
+                                <i class="fas fa-users mr-2"></i>{{ dispatch_form.worker_ids.label.text }}
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-info" id="smartRecommendBtn" style="border: none;">
+                                ✨ 智能推荐
+                            </button>
+                        </div>
+                        {{ dispatch_form.worker_ids(id="workerSelect", class="form-control") }}
+                        <div id="recommendationMsg" class="mt-2" style="display: none;"></div>
+                        <small class="form-help-text">
+                            <i class="fas fa-info-circle mr-1"></i>选择一个或多个维修工来处理此工单
+                        </small>
+                        {% if dispatch_form.worker_ids.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in dispatch_form.worker_ids.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <i class="fas fa-times mr-2"></i>取消
+                    </button>
+                    {{ dispatch_form.submit(class="btn btn-primary", id="dispatchSubmitBtn") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 on worker select field
+        $('#workerSelect').select2({
+            theme: 'bootstrap4',
+            width: '100%',
+            placeholder: '',
+            allowClear: true,
+            dropdownParent: $('#dispatchModal'), // Important: fixes focus issues in Bootstrap modals
+            minimumResultsForSearch: 0, // Always show search box
+            tags: false // Ensure it's not in tags mode
+        });
+
+        // Force fix layout after initialization
+        setTimeout(function() {
+            var $searchField = $('#workerSelect').next('.select2-container').find('.select2-search--inline .select2-search__field');
+            if ($searchField.length) {
+                $searchField.css({
+                    'margin-top': '0',
+                    'padding': '0',
+                    'height': 'auto',
+                    'line-height': '1.5'
+                });
+            }
+        }, 100);
+
+        // Fix Select2 "0" display issue by ensuring proper initialization
+        $('#workerSelect').on('select2:select select2:unselect', function() {
+            // Clear any "0" artifacts after selection changes
+            var $rendered = $(this).next('.select2-container').find('.select2-selection__rendered');
+            if ($rendered.length && ($rendered.text().trim() === '0' || $rendered.text().trim() === '')) {
+                $rendered.html('<span class="select2-selection__placeholder">搜索并选择维修师傅...</span>');
+            }
+        });
+
+        // Handle dispatch button click
+        $('#dispatchModal').on('show.bs.modal', function(event) {
+            // Button that triggered the modal
+            var button = $(event.relatedTarget);
+            // Extract info from data-* attributes
+            var orderId = button.data('id');
+            var orderTitle = button.data('title');
+            var orderLocation = button.data('location') || '-';
+            
+            // Update Order Summary in modal body
+            $('#modalOrderId').text('#' + orderId);
+            $('#modalOrderLocation').text(orderLocation);
+            $('#modalOrderTitle').text(orderTitle);
+            
+            // Update form action URL
+            var formAction = "{{ url_for('admin.dispatch_order', order_id=0) }}".replace('/0', '/' + orderId);
+            $('#dispatchForm').attr('action', formAction);
+
+            // Reset Select2 to clear any previous selections
+            $('#workerSelect').val(null).trigger('change');
+            
+            // Clear recommendation message
+            $('#recommendationMsg').text('').hide();
+
+            // Fix Select2 "0" display issue after reset
+            setTimeout(function() {
+                var $rendered = $('#workerSelect').next('.select2-container').find('.select2-selection__rendered');
+                if ($rendered.length && ($rendered.text().trim() === '0' || $rendered.text().trim() === '')) {
+                    $rendered.html('<span class="select2-selection__placeholder">搜索并选择维修师傅...</span>');
+                }
+            }, 100);
+        });
+
+        // Clean up Select2 when modal is hidden to prevent memory leaks
+        $('#dispatchModal').on('hidden.bs.modal', function() {
+            $('#workerSelect').val(null).trigger('change');
+            // Clear recommendation message
+            $('#recommendationMsg').text('').hide();
+        });
+
+        // Smart Recommend button click handler
+        $('#smartRecommendBtn').on('click', function() {
+            var $btn = $(this);
+            var originalText = $btn.html();
+            
+            // Show loading state
+            $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+            
+            // Make AJAX request
+            $.ajax({
+                url: "{{ url_for('admin.recommend_worker') }}",
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success && response.data) {
+                        var workerId = response.data.id;
+                        
+                        // Get current selected values (convert all to numbers for comparison)
+                        var currentValues = $('#workerSelect').val() || [];
+                        var currentValuesNum = currentValues.map(function(v) { return parseInt(v); });
+                        
+                        // Add the recommended worker if not already selected
+                        if ($.inArray(workerId, currentValuesNum) === -1) {
+                            currentValuesNum.push(workerId);
+                            $('#workerSelect').val(currentValuesNum).trigger('change');
+                        }
+                        
+                        // Display success message
+                        $('#recommendationMsg').html('<span style="color: #28a745;"><i class="fas fa-check-circle mr-1"></i>' + response.message + '</span>').show();
+                    } else {
+                        alert('推荐失败：' + (response.message || '未知错误'));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('请求失败：' + (xhr.responseJSON?.message || error || '网络错误'));
+                },
+                complete: function() {
+                    // Reset button state
+                    $btn.html(originalText).prop('disabled', false);
+                }
+            });
+        });
+
+        // Add icon to submit button
+        $('#dispatchSubmitBtn').html('<i class="fas fa-paper-plane mr-2"></i>确认派单');
+    });
+</script>
+{% endblock %}
