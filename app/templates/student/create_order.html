@@ -1,4 +1,5 @@
 {% extends "student/base.html" %}
+{% from "common/_macros.html" import render_field %}
 {% set active_page = 'create_order' %}
 
 {% block title %}TDRM - 申请报修{% endblock %}
@@ -26,64 +27,24 @@
                     {{ form.repair_building_id() }}
 
                     <!-- building_name: 只读字段 -->
-                    <div class="form-group">
-                        {{ form.building_name.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.building_name(class="form-control") }}
-                        {% if form.building_name.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.building_name.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.building_name) }}
 
                     <!-- repair_location: 必填字段 -->
-                    <div class="form-group">
-                        {{ form.repair_location.label(class="font-weight-bold text-gray-700") }}
-                        <span class="text-danger">*</span>
-                        {{ form.repair_location(class="form-control") }}
-                        {% if form.repair_location.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.repair_location.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.repair_location) }}
 
                     <!-- title: 必填字段 -->
-                    <div class="form-group">
-                        {{ form.title.label(class="font-weight-bold text-gray-700") }}
-                        <span class="text-danger">*</span>
-                        {{ form.title(class="form-control") }}
-                        {% if form.title.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.title.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.title) }}
 
                     <!-- description: 文本域 -->
-                    <div class="form-group">
-                        {{ form.description.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.description(class="form-control") }}
-                        {% if form.description.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.description.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.description) }}
 
                     <!-- image_urls: 文件上传 -->
                     <div class="form-group">
-                        {{ form.image_urls.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.image_urls(class="form-control-file") }}
-                        <small class="form-text text-muted">支持多图</small>
+                        {{ form.image_urls.label(class="font-weight-bold") }}
+                        {{ form.image_urls(class="form-control-file" + (" is-invalid" if form.image_urls.errors else "")) }}
+                        {% if form.image_urls.description %}
+                            <small class="form-text text-muted">{{ form.image_urls.description }}</small>
+                        {% endif %}
                         {% if form.image_urls.errors %}
                             <div class="invalid-feedback d-block">
                                 {% for error in form.image_urls.errors %}

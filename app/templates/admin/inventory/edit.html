@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% from "common/_macros.html" import render_field %}
 {% set active_page = 'inventory' %}
 
 {% block title %}TDRM - {{ title }}{% endblock %}
@@ -27,91 +28,30 @@
                     <!-- Row 1: part_name and spec -->
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.part_name.label(class="font-weight-bold") }}
-                                {{ form.part_name(class="form-control" + (" is-invalid" if form.part_name.errors else "")) }}
-                                {% if form.part_name.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.part_name.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {{ render_field(form.part_name) }}
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.spec.label(class="font-weight-bold") }}
-                                {{ form.spec(class="form-control" + (" is-invalid" if form.spec.errors else "")) }}
-                                {% if form.spec.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.spec.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {{ render_field(form.spec) }}
                         </div>
                     </div>
 
                     <!-- Row 2: unit, price, warning_line -->
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="form-group">
-                                {{ form.unit.label(class="font-weight-bold") }}
-                                {{ form.unit(class="form-control" + (" is-invalid" if form.unit.errors else "")) }}
-                                {% if form.unit.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.unit.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {{ render_field(form.unit) }}
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
-                                {{ form.price.label(class="font-weight-bold") }}
-                                {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else "")) }}
-                                {% if form.price.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.price.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {{ render_field(form.price) }}
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
-                                {{ form.warning_line.label(class="font-weight-bold") }}
-                                {{ form.warning_line(class="form-control" + (" is-invalid" if form.warning_line.errors else "")) }}
-                                {% if form.warning_line.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.warning_line.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {{ render_field(form.warning_line) }}
                         </div>
                     </div>
 
                     <!-- Row 3: current_stock -->
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group">
-                                {{ form.current_stock.label(class="font-weight-bold") }}
-                                {{ form.current_stock(class="form-control" + (" is-invalid" if form.current_stock.errors else "")) }}
-                                <small class="form-text text-muted">初始库存用于新配件，或手动调整现有配件的库存数量。</small>
-                                {% if form.current_stock.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.current_stock.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {{ render_field(form.current_stock, help_text="初始库存用于新配件，或手动调整现有配件的库存数量。") }}
                         </div>
                     </div>
 

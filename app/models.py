@@ -15,6 +15,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship, WriteOnlyMapped
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
+import jwt
 from app import db, login_manager
 
 
@@ -112,6 +114,29 @@ class User(UserMixin, db.Model):
     @property
     def is_active(self):
         return self.status == 1
+
+    def get_reset_password_token(self, expires_in=600):
+        """生成重置密码的 token"""
+        return jwt.encode(
+            {'reset_password': self.user_id, 'exp': int(datetime.now(timezone.utc).timestamp()) + expires_in},
+            current_app.config['SECRET_KEY'],
+            algorithm='HS256'
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        """验证重置密码的 token 并返回 User 对象"""
+        try:
+            user_id = jwt.decode(
+                token,
+                current_app.config['SECRET_KEY'],
+                algorithms=['HS256']
+            )['reset_password']
+        except jwt.ExpiredSignatureError:
+            return None
+        except jwt.InvalidTokenError:
+            return None
+        return db.session.get(User, user_id)
 
     def __repr__(self):
         return f'<User {self.username} ({self.role})>'

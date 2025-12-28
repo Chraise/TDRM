@@ -1,4 +1,5 @@
 {% extends "student/base.html" %}
+{% from "common/_macros.html" import order_status_badge %}
 {% set active_page = 'my_orders' %}
 
 {% block title %}TDRM - 工单详情{% endblock %}
@@ -20,30 +21,7 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">报修内容</h6>
-                <span class="badge 
-                    {% if order.status.value == 'Pending' %}
-                        badge-warning
-                    {% elif order.status.value == 'Completed' %}
-                        badge-success
-                    {% elif order.status.value == 'Cancelled' %}
-                        badge-secondary
-                    {% else %}
-                        badge-primary
-                    {% endif %}">
-                    {% if order.status.value == 'Pending' %}
-                        待处理
-                    {% elif order.status.value == 'Assigned' %}
-                        已派单
-                    {% elif order.status.value == 'InProgress' %}
-                        处理中
-                    {% elif order.status.value == 'Completed' %}
-                        已完成
-                    {% elif order.status.value == 'Cancelled' %}
-                        已取消
-                    {% else %}
-                        {{ order.status.value }}
-                    {% endif %}
-                </span>
+                {{ order_status_badge(order.status.value) }}
             </div>
             <div class="card-body">
                 <!-- 报修主题和提交时间 -->
@@ -221,7 +199,7 @@
                 {% elif order.status.value == 'Pending' %}
                     <!-- 场景 C: 待处理，显示取消按钮和状态 -->
                     <p class="text-gray-600 text-center mb-3">
-                        当前状态：待处理
+                        当前状态：{{ order_status_badge(order.status.value) }}
                     </p>
                     <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#cancelOrderModal">
                         <i class="fas fa-times mr-2"></i>取消工单
@@ -229,20 +207,7 @@
                 {% else %}
                     <!-- 场景 D: 其他状态 -->
                     <p class="text-gray-600 text-center mb-0">
-                        当前状态：
-                        {% if order.status.value == 'Pending' %}
-                            待处理
-                        {% elif order.status.value == 'Assigned' %}
-                            已派单
-                        {% elif order.status.value == 'InProgress' %}
-                            处理中
-                        {% elif order.status.value == 'Completed' %}
-                            已完成
-                        {% elif order.status.value == 'Cancelled' %}
-                            已取消
-                        {% else %}
-                            {{ order.status.value }}
-                        {% endif %}
+                        当前状态：{{ order_status_badge(order.status.value) }}
                     </p>
                 {% endif %}
             </div>

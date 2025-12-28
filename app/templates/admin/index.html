@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% from "common/_macros.html" import stat_card %}
 {% set active_page = 'dashboard' %}
 
 {% block title %}TDRM - 管理员后台 - Dashboard{% endblock %}
@@ -11,79 +12,10 @@
 
 <!-- Content Row -->
 <div class="row">
-
-    <!-- Card 1 - 待处理工单 (Pending Orders) -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            待处理工单</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_count }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 2 - 库存预警 (Low Stock) -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            库存预警</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ low_stock_count }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 3 - 本月已完工 (Finished Monthly) -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            本月已完工</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ finished_monthly_count }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 4 - 总用户数 (Total Users) -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            总用户数</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_users_count }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {{ stat_card('待处理工单', pending_count, 'fas fa-clipboard-list', 'primary') }}
+    {{ stat_card('库存预警', low_stock_count, 'fas fa-exclamation-triangle', 'warning') }}
+    {{ stat_card('本月已完工', finished_monthly_count, 'fas fa-check-circle', 'success') }}
+    {{ stat_card('总用户数', total_users_count, 'fas fa-users', 'info') }}
 </div>
 
 <!-- Content Row -->

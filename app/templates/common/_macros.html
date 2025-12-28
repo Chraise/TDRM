@@ -1,0 +1,83 @@
+{# 表单字段渲染宏 - 自动处理Label、Input、Help Text和Errors #}
+{% macro render_field(field, help_text=None, extra_classes='') %}
+    <div class="form-group">
+        {% if field.label %}
+            {{ field.label(class="font-weight-bold") }}
+        {% endif %}
+        {{ field(class="form-control" + (" is-invalid" if field.errors else "") + (" " + extra_classes if extra_classes else "")) }}
+        {% if help_text %}
+            <small class="form-text text-muted">{{ help_text }}</small>
+        {% elif field.description %}
+            <small class="form-text text-muted">{{ field.description }}</small>
+        {% endif %}
+        {% if field.errors %}
+            <div class="invalid-feedback">
+                {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{# 统计卡片宏 - 用于仪表盘 #}
+{% macro stat_card(title, value, icon, color='primary') %}
+    {% set color_map = {
+        'primary': {'border': 'border-left-primary', 'text': 'text-primary'},
+        'warning': {'border': 'border-left-warning', 'text': 'text-warning'},
+        'success': {'border': 'border-left-success', 'text': 'text-success'},
+        'info': {'border': 'border-left-info', 'text': 'text-info'},
+        'danger': {'border': 'border-left-danger', 'text': 'text-danger'}
+    } %}
+    {% set colors = color_map.get(color, color_map['primary']) %}
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card {{ colors.border }} shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold {{ colors.text }} text-uppercase mb-1">
+                            {{ title }}
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ value }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="{{ icon }} fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{# 搜索栏宏 - 统一的搜索框样式 #}
+{% macro search_bar(endpoint, placeholder='搜索...') %}
+    <form method="GET" action="{{ url_for(endpoint) }}" class="mb-3" id="searchForm">
+        <div class="input-group" style="max-width: 400px;">
+            <input type="text" name="q" class="form-control" placeholder="{{ placeholder }}" 
+                   value="" id="searchInput">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="searchBtn">
+                    <i class="fas fa-search"></i> 搜索
+                </button>
+            </div>
+        </div>
+    </form>
+{% endmacro %}
+
+{# 工单状态徽章宏 - 根据状态值返回对应的 Bootstrap badge #}
+{% macro order_status_badge(status_value) %}
+    {% if status_value == 'Pending' %}
+        <span class="badge badge-warning">待处理</span>
+    {% elif status_value == 'Assigned' %}
+        <span class="badge badge-info">已派单</span>
+    {% elif status_value == 'InProgress' %}
+        <span class="badge badge-primary">处理中</span>
+    {% elif status_value == 'Completed' %}
+        <span class="badge badge-success">已完成</span>
+    {% elif status_value == 'Cancelled' %}
+        <span class="badge badge-secondary">已取消</span>
+    {% else %}
+        <span class="badge badge-secondary">{{ status_value }}</span>
+    {% endif %}
+{% endmacro %}
+

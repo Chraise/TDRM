@@ -1,4 +1,5 @@
 {% extends "student/base.html" %}
+{% from "common/_macros.html" import render_field %}
 {% set active_page = 'my_orders' %}
 
 {% block title %}TDRM - 服务评价{% endblock %}
@@ -113,10 +114,11 @@
 
                     <!-- 反馈输入框 -->
                     <div class="form-group">
-                        {{ form.feedback.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.feedback(class="form-control", rows="4", placeholder="请输入您的反馈建议（选填）") }}
+                        {{ form.feedback.label(class="font-weight-bold") }}
+                        {{ form.feedback(class="form-control" + (" is-invalid" if form.feedback.errors else ""), rows="4", placeholder="请输入您的反馈建议（选填）") }}
+                        <small class="form-text text-muted">请输入您的反馈建议（选填）</small>
                         {% if form.feedback.errors %}
-                            <div class="text-danger small mt-1">
+                            <div class="invalid-feedback">
                                 {% for error in form.feedback.errors %}
                                     <div>{{ error }}</div>
                                 {% endfor %}

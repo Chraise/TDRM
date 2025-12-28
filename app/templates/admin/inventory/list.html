@@ -11,18 +11,8 @@
         </a>
     </div>
     <div class="card-body">
-        <!-- Search Area -->
-        <form method="GET" action="{{ url_for('admin.inventory') }}" class="mb-3" id="searchForm">
-            <div class="input-group" style="max-width: 400px;">
-                <input type="text" name="q" class="form-control" placeholder="搜索配件名称或规格..." 
-                       value="" id="searchInput">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="button" id="searchBtn">
-                        <i class="fas fa-search"></i> 搜索
-                    </button>
-                </div>
-            </div>
-        </form>
+        {% from "common/_macros.html" import search_bar %}
+        {{ search_bar('admin.inventory', '搜索配件名称或规格...') }}
 
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -64,92 +54,28 @@
                                 </a>
                                 <button type="button" class="btn btn-info btn-sm" 
                                         data-toggle="modal" 
-                                        data-target="#restockModal{{ part.part_id }}" 
+                                        data-target="#restockModal"
+                                        data-part-id="{{ part.part_id }}"
+                                        data-part-name="{{ part.part_name }}"
+                                        data-part-spec="{{ part.spec or '' }}"
+                                        data-current-stock="{{ part.current_stock }}"
+                                        data-current-price="{{ "%.2f"|format(part.price) }}"
+                                        data-unit="{{ part.unit or '' }}"
                                         title="补货">
                                     <i class="fas fa-box"></i> 补货
                                 </button>
                                 <button type="button" class="btn btn-danger btn-sm" 
                                         data-toggle="modal" 
-                                        data-target="#deleteModal{{ part.part_id }}" 
+                                        data-target="#deleteModal"
+                                        data-part-id="{{ part.part_id }}"
+                                        data-part-name="{{ part.part_name }}"
+                                        data-part-spec="{{ part.spec or '' }}"
                                         title="删除">
                                     <i class="fas fa-trash"></i> 删除
                                 </button>
                             </div>
                         </td>
                     </tr>
-
-                    <!-- Restock Modal for each part -->
-                    <div class="modal fade" id="restockModal{{ part.part_id }}" tabindex="-1" role="dialog" 
-                         aria-labelledby="restockModalLabel{{ part.part_id }}" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="restockModalLabel{{ part.part_id }}">
-                                        补货 - {{ part.part_name }}{% if part.spec %} ({{ part.spec }}){% endif %}
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <form method="POST" action="{{ url_for('admin.stock_in', part_id=part.part_id) }}">
-                                    {{ stock_in_form.hidden_tag() }}
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label for="add_quantity{{ part.part_id }}">{{ stock_in_form.add_quantity.label.text }}</label>
-                                            {{ stock_in_form.add_quantity(id="add_quantity" + part.part_id|string, class="form-control") }}
-                                            {% if stock_in_form.add_quantity.errors %}
-                                                <small class="text-danger">{{ stock_in_form.add_quantity.errors[0] }}</small>
-                                            {% endif %}
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="new_price{{ part.part_id }}">{{ stock_in_form.new_price.label.text }}</label>
-                                            {{ stock_in_form.new_price(id="new_price" + part.part_id|string, class="form-control") }}
-                                            {% if stock_in_form.new_price.errors %}
-                                                <small class="text-danger">{{ stock_in_form.new_price.errors[0] }}</small>
-                                            {% endif %}
-                                            <small class="form-text text-muted">{{ stock_in_form.new_price.description }}</small>
-                                        </div>
-                                        <div class="alert alert-info">
-                                            <strong>当前库存:</strong> {{ part.current_stock }}{{ part.unit or '' }} | 
-                                            <strong>当前单价:</strong> ¥{{ "%.2f"|format(part.price) }}
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                                        <button type="submit" class="btn btn-primary">确认入库</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Delete Confirmation Modal for each part -->
-                    <div class="modal fade" id="deleteModal{{ part.part_id }}" tabindex="-1" role="dialog" 
-                         aria-labelledby="deleteModalLabel{{ part.part_id }}" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteModalLabel{{ part.part_id }}">
-                                        确认删除配件
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <form method="POST" action="{{ url_for('admin.delete_part', part_id=part.part_id) }}">
-                                    {{ delete_form.hidden_tag() }}
-                                    <div class="modal-body">
-                                        <p>您确定要删除配件 <strong>{{ part.part_name }}{% if part.spec %} ({{ part.spec }}){% endif %}</strong> 吗？</p>
-                                        <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> 此操作不可撤销！如果该配件存在关联的历史维修记录，将无法删除。</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                                        <button type="submit" class="btn btn-danger">确认删除</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                     {% else %}
                     <tr>
                         <td colspan="7" class="text-center text-muted py-4">
@@ -159,6 +85,69 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Restock Modal - 单个通用Modal，通过jQuery动态填充 -->
+<div class="modal fade" id="restockModal" tabindex="-1" role="dialog" aria-labelledby="restockModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="restockModalLabel">补货</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="" id="restockForm">
+                {{ stock_in_form.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="add_quantity">{{ stock_in_form.add_quantity.label.text }}</label>
+                        {{ stock_in_form.add_quantity(id="add_quantity", class="form-control") }}
+                        <div id="add_quantity_error" class="text-danger" style="display: none;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_price">{{ stock_in_form.new_price.label.text }}</label>
+                        {{ stock_in_form.new_price(id="new_price", class="form-control") }}
+                        <small class="form-text text-muted">{{ stock_in_form.new_price.description }}</small>
+                        <div id="new_price_error" class="text-danger" style="display: none;"></div>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>当前库存:</strong> <span id="modalCurrentStock">-</span> | 
+                        <strong>当前单价:</strong> ¥<span id="modalCurrentPrice">-</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">确认入库</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal - 单个通用Modal，通过jQuery动态填充 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">确认删除配件</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="" id="deleteForm">
+                {{ delete_form.hidden_tag() }}
+                <div class="modal-body">
+                    <p>您确定要删除配件 <strong id="deletePartName">-</strong> 吗？</p>
+                    <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> 此操作不可撤销！如果该配件存在关联的历史维修记录，将无法删除。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">确认删除</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -208,6 +197,60 @@ $(document).ready(function() {
     $('#searchForm').on('submit', function(e) {
         e.preventDefault();
         table.search($('#searchInput').val()).draw();
+    });
+
+    // 补货Modal动态填充
+    $('#restockModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var partId = button.data('part-id');
+        var partName = button.data('part-name');
+        var partSpec = button.data('part-spec');
+        var currentStock = button.data('current-stock');
+        var currentPrice = button.data('current-price');
+        var unit = button.data('unit');
+
+        // 更新Modal标题
+        var titleText = '补货 - ' + partName;
+        if (partSpec) {
+            titleText += ' (' + partSpec + ')';
+        }
+        $('#restockModalLabel').text(titleText);
+
+        // 更新当前库存和单价信息
+        var stockText = currentStock + (unit ? unit : '');
+        $('#modalCurrentStock').text(stockText);
+        $('#modalCurrentPrice').text(currentPrice);
+
+        // 更新表单action URL
+        var formAction = "{{ url_for('admin.stock_in', part_id=0) }}".replace('/0', '/' + partId);
+        $('#restockForm').attr('action', formAction);
+
+        // 清空表单字段
+        $('#add_quantity').val('');
+        $('#new_price').val('');
+        $('#add_quantity_error').hide().text('');
+        $('#new_price_error').hide().text('');
+        $('#add_quantity').removeClass('is-invalid');
+        $('#new_price').removeClass('is-invalid');
+    });
+
+    // 删除Modal动态填充
+    $('#deleteModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var partId = button.data('part-id');
+        var partName = button.data('part-name');
+        var partSpec = button.data('part-spec');
+
+        // 更新配件名称
+        var partNameText = partName;
+        if (partSpec) {
+            partNameText += ' (' + partSpec + ')';
+        }
+        $('#deletePartName').text(partNameText);
+
+        // 更新表单action URL
+        var formAction = "{{ url_for('admin.delete_part', part_id=0) }}".replace('/0', '/' + partId);
+        $('#deleteForm').attr('action', formAction);
     });
 });
 </script>

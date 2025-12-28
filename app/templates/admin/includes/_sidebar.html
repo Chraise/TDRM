@@ -1,0 +1,69 @@
+{# Sidebar #}
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('admin.index') }}">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-tools"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">TDRM <sup>管理</sup></div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('admin.index') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>仪表盘</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        管理功能
+    </div>
+
+    <!-- Nav Item - 工单管理 -->
+    <li class="nav-item {% if active_page == 'order_list' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('admin.order_list') }}">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>工单管理</span></a>
+    </li>
+
+    <!-- Nav Item - 库存管理 -->
+    <li class="nav-item {% if active_page == 'inventory' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('admin.inventory') }}">
+            <i class="fas fa-fw fa-boxes"></i>
+            <span>库存管理</span></a>
+    </li>
+
+    <!-- Nav Item - 人员管理 -->
+    <li class="nav-item {% if active_page == 'user_list' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('admin.user_list') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span>人员管理</span></a>
+    </li>
+
+    <!-- Nav Item - 楼宇管理 -->
+    <li class="nav-item {% if active_page == 'building_list' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('admin.building_list') }}">
+            <i class="fas fa-fw fa-building"></i>
+            <span>楼宇管理</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+{# End of Sidebar #}
+
+

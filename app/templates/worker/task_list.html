@@ -1,4 +1,5 @@
 {% extends "worker/base.html" %}
+{% from "common/_macros.html" import search_bar %}
 {% set active_page = 'task_list' %}
 
 {% block styles %}
@@ -11,18 +12,7 @@
         <h6 class="m-0 font-weight-bold text-primary">我的待办任务</h6>
     </div>
     <div class="card-body">
-        <!-- Search Area -->
-        <form method="GET" action="{{ url_for('worker.task_list') }}" class="mb-3" id="searchForm">
-            <div class="input-group" style="max-width: 400px;">
-                <input type="text" name="q" class="form-control" placeholder="搜索工单ID、位置或内容..." 
-                       value="" id="searchInput">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="button" id="searchBtn">
-                        <i class="fas fa-search"></i> 搜索
-                    </button>
-                </div>
-            </div>
-        </form>
+        {{ search_bar('worker.task_list', '搜索工单ID、位置或内容...') }}
 
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

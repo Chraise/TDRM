@@ -4,14 +4,14 @@ from wtforms import StringField, TextAreaField, SubmitField, HiddenField, RadioF
 from wtforms.validators import DataRequired, Length, Optional
 
 class RepairOrderForm(FlaskForm):
-    """学生报修表单"""
+    """报修工单提交表单"""
 
     repair_building_id = HiddenField('故障所在楼宇ID')
     building_name = StringField(
         '故障所在楼宇',
         render_kw={
-            'readonly': True, # 只读！
-            'style': 'background-color: #e9ecef; cursor: not-allowed;' # 灰色背景示意不可点
+            'readonly': True,
+            'style': 'background-color: #e9ecef; cursor: not-allowed;'
         }
     )
     repair_location = StringField(
@@ -48,28 +48,13 @@ class RepairOrderForm(FlaskForm):
             FileAllowed(['jpg', 'jpeg', 'png', 'gif'], message='只允许上传图片文件')
         ],
         render_kw={'accept': 'image/*'},
-        description='可以上传多张图片（选填）'
+        description='支持多张图片上传（选填）'
     )
     submit = SubmitField('提交报修')
 
-    def __init__(self, *args, **kwargs):
-        repair_building_id = kwargs.pop('building_id', None)
-        repair_location = kwargs.pop('repair_location', None)
-        building_name = kwargs.pop('building_name', None)
-
-        super(RepairOrderForm, self).__init__(*args, **kwargs)
-
-        if repair_building_id is not None:
-            self.repair_building_id.data = repair_building_id
-        if building_name is not None:
-            self.building_name.data = building_name
-        if not self.is_submitted(): # 这个设计可以保留用户输入的数据，而不会被刷新掉
-            if repair_location is not None:
-                self.repair_location.data = repair_location
-
 
 class RateOrderForm(FlaskForm):
-    """工单评价表单"""
+    """工单服务评价表单"""
     rating = RadioField('服务评分', choices=[
         (5, '非常满意 (5星)'),
         (4, '满意 (4星)'),

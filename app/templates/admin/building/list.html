@@ -44,7 +44,10 @@
                                 
                                 <!-- Delete Button -->
                                 <button type="button" class="btn btn-sm btn-danger" title="删除"
-                                        data-toggle="modal" data-target="#deleteModal{{ item.building.building_id }}">
+                                        data-toggle="modal" 
+                                        data-target="#deleteModal"
+                                        data-building-id="{{ item.building.building_id }}"
+                                        data-building-name="{{ item.building.building_name }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -59,22 +62,20 @@
             </table>
         </div>
 
-        <!-- Delete Confirmation Modals for each building -->
-        {% for item in buildings_with_stats %}
-        <div class="modal fade" id="deleteModal{{ item.building.building_id }}" tabindex="-1" role="dialog" 
-             aria-labelledby="deleteModalLabel{{ item.building.building_id }}" aria-hidden="true">
+        <!-- Delete Confirmation Modal - 单个通用Modal，通过jQuery动态填充 -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel{{ item.building.building_id }}">确认删除宿舍楼</h5>
+                        <h5 class="modal-title" id="deleteModalLabel">确认删除宿舍楼</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form method="POST" action="{{ url_for('admin.building_delete', building_id=item.building.building_id) }}">
+                    <form method="POST" action="" id="deleteBuildingForm">
                         {{ delete_form.hidden_tag() }}
                         <div class="modal-body">
-                            <p>您确定要删除宿舍楼 <strong>{{ item.building.building_name }}</strong> 吗？</p>
+                            <p>您确定要删除宿舍楼 <strong id="deleteBuildingName">-</strong> 吗？</p>
                             <p class="text-danger">
                                 <i class="fas fa-exclamation-triangle"></i> 此操作不可撤销！
                             </p>
@@ -90,7 +91,6 @@
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
 </div>
 {% endblock %}
@@ -120,6 +120,20 @@ $(document).ready(function() {
             infoEmpty: "显示第 0 至 0 项结果，共 0 项",
             infoFiltered: "(从 _MAX_ 项结果中过滤)"
         }
+    });
+
+    // 删除Modal动态填充
+    $('#deleteModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var buildingId = button.data('building-id');
+        var buildingName = button.data('building-name');
+
+        // 更新宿舍楼名称
+        $('#deleteBuildingName').text(buildingName);
+
+        // 更新表单action URL
+        var formAction = "{{ url_for('admin.building_delete', building_id=0) }}".replace('/0', '/' + buildingId);
+        $('#deleteBuildingForm').attr('action', formAction);
     });
 });
 </script>

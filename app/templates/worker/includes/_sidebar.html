@@ -1,0 +1,55 @@
+{# Sidebar #}
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('worker.index') }}">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-tools"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">TDRM <sup>维修工</sup></div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item {% if active_page == 'index' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('worker.index') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>仪表盘</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        工单管理
+    </div>
+
+    <!-- Nav Item - My Tasks -->
+    <li class="nav-item {% if active_page == 'task_list' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('worker.task_list') }}">
+            <i class="fas fa-fw fa-tasks"></i>
+            <span>我的任务</span></a>
+    </li>
+
+    <!-- Nav Item - History -->
+    <li class="nav-item {% if active_page == 'history' %}active{% endif %}">
+        <a class="nav-link" href="{{ url_for('worker.history') }}">
+            <i class="fas fa-fw fa-history"></i>
+            <span>历史记录</span></a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+{# End of Sidebar #}
+
+

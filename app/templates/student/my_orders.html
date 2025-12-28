@@ -1,11 +1,16 @@
 {% extends "student/base.html" %}
+{% from "common/_macros.html" import order_status_badge, search_bar %}
 {% set active_page = 'my_orders' %}
+
+{% block styles %}
+<!-- DataTables CSS -->
+<link href="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+{% endblock %}
 
 {% block title %}TDRM - 我的工单{% endblock %}
 
 {% block content %}
 <!-- Page Heading -->
-<h1 class="h3 mb-4 text-gray-800">我的工单</h1>
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
@@ -13,6 +18,8 @@
         <h6 class="m-0 font-weight-bold text-primary">工单列表</h6>
     </div>
     <div class="card-body">
+        {{ search_bar('student.my_orders', '搜索工单号、主题...') }}
+
         <!-- Status Filter Tabs -->
         <ul class="nav nav-tabs mb-3" id="statusTabs" role="tablist">
             <li class="nav-item">
@@ -54,7 +61,7 @@
         </ul>
 
         <div class="table-responsive">
-            <table class="table table-bordered" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
                         <th>工单号</th>
@@ -65,26 +72,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% if pagination.items %}
-                        {% for order in pagination.items %}
+                    {% if orders %}
+                        {% for order in orders %}
                             <tr>
                                 <td>#{{ order.order_id }}</td>
                                 <td>{{ order.submit_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                                 <td>{{ order.title }}</td>
                                 <td>
-                                    {% if order.status.value == 'Pending' %}
-                                        <span class="badge badge-warning">待处理</span>
-                                    {% elif order.status.value == 'Assigned' %}
-                                        <span class="badge badge-info">已派单</span>
-                                    {% elif order.status.value == 'InProgress' %}
-                                        <span class="badge badge-primary">处理中</span>
-                                    {% elif order.status.value == 'Completed' %}
-                                        <span class="badge badge-success">已完成</span>
-                                    {% elif order.status.value == 'Cancelled' %}
-                                        <span class="badge badge-secondary">已取消</span>
-                                    {% else %}
-                                        <span class="badge badge-secondary">{{ order.status.value }}</span>
-                                    {% endif %}
+                                    {{ order_status_badge(order.status.value) }}
                                 </td>
                                 <td>
                                     <a href="{{ url_for('student.order_detail', order_id=order.order_id) }}" class="btn btn-sm btn-info" title="查看工单详情">
@@ -115,66 +110,55 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
-        {% if pagination.pages > 1 %}
-            <nav aria-label="工单分页导航">
-                <ul class="pagination justify-content-center">
-                    {% if pagination.has_prev %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.prev_num, status=current_status if current_status != 'all' else None) }}" aria-label="上一页">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">上一页</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="上一页">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">上一页</span>
-                            </a>
-                        </li>
-                    {% endif %}
-
-                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                        {% if page_num %}
-                            {% if page_num == pagination.page %}
-                                <li class="page-item active">
-                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
-                                </li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ url_for('student.my_orders', page=page_num, status=current_status if current_status != 'all' else None) }}">{{ page_num }}</a>
-                                </li>
-                            {% endif %}
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#">...</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if pagination.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('student.my_orders', page=pagination.next_num, status=current_status if current_status != 'all' else None) }}" aria-label="下一页">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">下一页</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="下一页">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">下一页</span>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            <div class="text-center text-gray-600 small mt-2">
-                显示第 {{ (pagination.page - 1) * pagination.per_page + 1 }} - {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }} 条，共 {{ pagination.total }} 条记录
-            </div>
-        {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Page level plugins -->
+<script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+<!-- Page level custom scripts -->
+<script>
+$(document).ready(function() {
+    var table = $('#dataTable').DataTable({
+        ordering: false,
+        lengthChange: false,
+        searching: true,
+        dom: 'rt<"d-flex justify-content-between align-items-center"<"info"i><"pagination"p>>',
+        pageLength: {{ posts_per_page }},
+        language: {
+            paginate: {
+                first: "首页",
+                previous: "上一页",
+                next: "下一页",
+                last: "末页"
+            },
+            info: "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            infoEmpty: "显示第 0 至 0 项结果，共 0 项",
+            infoFiltered: "(从 _MAX_ 项结果中过滤)"
+        }
+    });
+
+    // 自定义搜索框功能
+    $('#searchBtn').on('click', function() {
+        table.search($('#searchInput').val()).draw();
+    });
+
+    // 按回车键搜索
+    $('#searchInput').on('keyup', function(e) {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            table.search(this.value).draw();
+        }
+    });
+
+    // 阻止表单提交
+    $('#searchForm').on('submit', function(e) {
+        e.preventDefault();
+        table.search($('#searchInput').val()).draw();
+    });
+});
+</script>
 {% endblock %}

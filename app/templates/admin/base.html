@@ -20,6 +20,9 @@
     <!-- Custom styles for this template-->
     <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
 
+    <!-- Admin Custom CSS -->
+    <link href="{{ url_for('static', filename='css/admin-custom.css') }}" rel="stylesheet">
+
     {% block styles %}{% endblock %}
 
 </head>
@@ -30,72 +33,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url_for('admin.index') }}">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-tools"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">TDRM <sup>管理</sup></div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
-                <a class="nav-link" href="{{ url_for('admin.index') }}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>仪表盘</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                管理功能
-            </div>
-
-            <!-- Nav Item - 工单管理 -->
-            <li class="nav-item {% if active_page == 'order_list' %}active{% endif %}">
-                <a class="nav-link" href="{{ url_for('admin.order_list') }}">
-                    <i class="fas fa-fw fa-clipboard-list"></i>
-                    <span>工单管理</span></a>
-            </li>
-
-            <!-- Nav Item - 库存管理 -->
-            <li class="nav-item {% if active_page == 'inventory' %}active{% endif %}">
-                <a class="nav-link" href="{{ url_for('admin.inventory') }}">
-                    <i class="fas fa-fw fa-boxes"></i>
-                    <span>库存管理</span></a>
-            </li>
-
-            <!-- Nav Item - 人员管理 -->
-            <li class="nav-item {% if active_page == 'user_list' %}active{% endif %}">
-                <a class="nav-link" href="{{ url_for('admin.user_list') }}">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>人员管理</span></a>
-            </li>
-
-            <!-- Nav Item - 楼宇管理 -->
-            <li class="nav-item {% if active_page == 'building_list' %}active{% endif %}">
-                <a class="nav-link" href="{{ url_for('admin.building_list') }}">
-                    <i class="fas fa-fw fa-building"></i>
-                    <span>楼宇管理</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
-        <!-- End of Sidebar -->
+        {% include "admin/includes/_sidebar.html" %}
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
@@ -104,41 +42,7 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ current_user.username }}</span>
-                                <img class="img-profile rounded-circle"
-                                    src="{{ url_for('static', filename='img/undraw_profile.svg') }}">
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    退出登录
-                                </a>
-                            </div>
-                        </li>
-
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
+                {% include "admin/includes/_topbar.html" %}
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -217,38 +121,8 @@
     <!-- Custom scripts for all pages-->
     <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
 
-    <!-- Global scripts -->
-    <script>
-        // Global function to convert UTC time to Shanghai timezone
-        function convertUtcToShanghai() {
-            $('.utc-time').each(function() {
-                var $elem = $(this);
-                var utcTimeStr = $elem.data('utc-time');
-                if (utcTimeStr) {
-                    // 确保字符串以Z结尾（表示UTC时间）
-                    if (!utcTimeStr.endsWith('Z')) {
-                        utcTimeStr += 'Z';
-                    }
-                    // 创建UTC时间对象
-                    var utcDate = new Date(utcTimeStr);
-                    // 转换为上海时区（UTC+8）时间字符串（YYYY-MM-DD HH:MM格式）
-                    // 上海时区比UTC快8小时
-                    var shanghaiDate = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
-                    var shanghaiTimeStr = shanghaiDate.getUTCFullYear() + '-' +
-                        String(shanghaiDate.getUTCMonth() + 1).padStart(2, '0') + '-' +
-                        String(shanghaiDate.getUTCDate()).padStart(2, '0') + ' ' +
-                        String(shanghaiDate.getUTCHours()).padStart(2, '0') + ':' +
-                        String(shanghaiDate.getUTCMinutes()).padStart(2, '0');
-                    $elem.text(shanghaiTimeStr);
-                }
-            });
-        }
-
-        $(document).ready(function() {
-            // Auto-convert UTC time to Shanghai timezone
-            convertUtcToShanghai();
-        });
-    </script>
+    <!-- Global utility scripts -->
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
 
     {% block scripts %}{% endblock %}
 

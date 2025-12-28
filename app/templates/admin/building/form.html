@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% from "common/_macros.html" import render_field %}
 {% set active_page = 'building_list' %}
 
 {% block content %}
@@ -22,44 +23,9 @@
                 <form method="POST">
                     {{ form.hidden_tag() }}
                     
-                    <!-- Building Name Field -->
-                    <div class="form-group">
-                        {{ form.building_name.label(class="font-weight-bold") }}
-                        {{ form.building_name(class="form-control" + (" is-invalid" if form.building_name.errors else "")) }}
-                        {% if form.building_name.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.building_name.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Location Field -->
-                    <div class="form-group">
-                        {{ form.location.label(class="font-weight-bold") }}
-                        {{ form.location(class="form-control" + (" is-invalid" if form.location.errors else "")) }}
-                        {% if form.location.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.location.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Admin Contact Field -->
-                    <div class="form-group">
-                        {{ form.admin_contact.label(class="font-weight-bold") }}
-                        {{ form.admin_contact(class="form-control" + (" is-invalid" if form.admin_contact.errors else "")) }}
-                        {% if form.admin_contact.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in form.admin_contact.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.building_name) }}
+                    {{ render_field(form.location) }}
+                    {{ render_field(form.admin_contact) }}
 
                     <!-- Form Buttons -->
                     <div class="form-group mt-4">

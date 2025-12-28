@@ -1,4 +1,5 @@
 {% extends "worker/base.html" %}
+{% from "common/_macros.html" import render_field %}
 
 {% block title %}TDRM - 填写维修报告{% endblock %}
 
@@ -106,48 +107,11 @@
                     {{ form.hidden_tag() }}
 
                     <!-- 时间追踪 -->
-                    <div class="form-group">
-                        {{ form.start_time.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.start_time(class="form-control") }}
-                        {% if form.start_time.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.start_time.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        <small class="form-text text-muted">
-                            <i class="fas fa-info-circle"></i> 请按本地时间（北京时间）输入
-                        </small>
-                    </div>
-
-                    <div class="form-group">
-                        {{ form.end_time.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.end_time(class="form-control") }}
-                        {% if form.end_time.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.end_time.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        <small class="form-text text-muted">
-                            <i class="fas fa-info-circle"></i> 请按本地时间（北京时间）输入，人工费用将根据维修时长自动计算（50元/小时）。
-                        </small>
-                    </div>
+                    {{ render_field(form.start_time, help_text="请按本地时间（北京时间）输入") }}
+                    {{ render_field(form.end_time, help_text="请按本地时间（北京时间）输入，人工费用将根据维修时长自动计算（50元/小时）。") }}
 
                     <!-- 维修结果 -->
-                    <div class="form-group">
-                        {{ form.result_desc.label(class="font-weight-bold text-gray-700") }}
-                        {{ form.result_desc(class="form-control") }}
-                        {% if form.result_desc.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.result_desc.errors %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ render_field(form.result_desc) }}
 
                     <!-- 备件使用（动态部分） -->
                     <div class="form-group">
