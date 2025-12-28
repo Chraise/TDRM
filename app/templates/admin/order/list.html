@@ -319,7 +319,15 @@
                                     -
                                 {% endif %}
                             </td>
-                            <td>{{ order.submit_time.strftime('%Y-%m-%d %H:%M') if order.submit_time else '-' }}</td>
+                            <td>
+                                {% if order.submit_time %}
+                                    <span class="utc-time" data-utc-time="{{ order.submit_time.isoformat() }}Z">
+                                        {{ order.submit_time.strftime('%Y-%m-%d %H:%M') }}
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if order.status == OrderStatus.PENDING %}
                                     <span class="badge badge-warning">待处理</span>

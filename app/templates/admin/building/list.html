@@ -1,0 +1,126 @@
+{% extends "admin/base.html" %}
+{% set active_page = 'building_list' %}
+
+{% block content %}
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">宿舍楼列表</h6>
+        <a href="{{ url_for('admin.building_create') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> 新增宿舍楼
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>楼名</th>
+                        <th>地理位置</th>
+                        <th>宿管办公室电话</th>
+                        <th>统计信息</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in buildings_with_stats %}
+                    <tr>
+                        <td>{{ item.building.building_id }}</td>
+                        <td>{{ item.building.building_name }}</td>
+                        <td>{{ item.building.location or '-' }}</td>
+                        <td>{{ item.building.admin_contact or '-' }}</td>
+                        <td>
+                            <span class="badge badge-primary">学生: {{ item.user_count }}</span>
+                            <span class="badge badge-warning ml-2">活跃工单: {{ item.active_order_count }}</span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <!-- Edit Button -->
+                                <a href="{{ url_for('admin.building_edit', building_id=item.building.building_id) }}" 
+                                   class="btn btn-sm btn-info" title="编辑">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <!-- Delete Button -->
+                                <button type="button" class="btn btn-sm btn-danger" title="删除"
+                                        data-toggle="modal" data-target="#deleteModal{{ item.building.building_id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">暂无宿舍楼数据</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Delete Confirmation Modals for each building -->
+        {% for item in buildings_with_stats %}
+        <div class="modal fade" id="deleteModal{{ item.building.building_id }}" tabindex="-1" role="dialog" 
+             aria-labelledby="deleteModalLabel{{ item.building.building_id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ item.building.building_id }}">确认删除宿舍楼</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin.building_delete', building_id=item.building.building_id) }}">
+                        {{ delete_form.hidden_tag() }}
+                        <div class="modal-body">
+                            <p>您确定要删除宿舍楼 <strong>{{ item.building.building_name }}</strong> 吗？</p>
+                            <p class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i> 此操作不可撤销！
+                            </p>
+                            <div class="alert alert-warning">
+                                <strong>注意：</strong>如果该宿舍楼存在关联的报修单记录或仍有学生绑定，将无法删除。
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-danger">确认删除</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Page level plugins -->
+<script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+<!-- Page level custom scripts -->
+<script>
+$(document).ready(function() {
+    var table = $('#dataTable').DataTable({
+        ordering: true,
+        lengthChange: false,
+        searching: true,
+        dom: 'rt<"d-flex justify-content-between align-items-center"<"info"i><"pagination"p>>',
+        pageLength: 10,
+        language: {
+            paginate: {
+                first: "首页",
+                previous: "上一页",
+                next: "下一页",
+                last: "末页"
+            },
+            info: "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            infoEmpty: "显示第 0 至 0 项结果，共 0 项",
+            infoFiltered: "(从 _MAX_ 项结果中过滤)"
+        }
+    });
+});
+</script>
+{% endblock %}

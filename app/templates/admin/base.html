@@ -79,6 +79,13 @@
                     <span>人员管理</span></a>
             </li>
 
+            <!-- Nav Item - 楼宇管理 -->
+            <li class="nav-item {% if active_page == 'building_list' %}active{% endif %}">
+                <a class="nav-link" href="{{ url_for('admin.building_list') }}">
+                    <i class="fas fa-fw fa-building"></i>
+                    <span>楼宇管理</span></a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
@@ -209,6 +216,39 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Global scripts -->
+    <script>
+        // Global function to convert UTC time to Shanghai timezone
+        function convertUtcToShanghai() {
+            $('.utc-time').each(function() {
+                var $elem = $(this);
+                var utcTimeStr = $elem.data('utc-time');
+                if (utcTimeStr) {
+                    // 确保字符串以Z结尾（表示UTC时间）
+                    if (!utcTimeStr.endsWith('Z')) {
+                        utcTimeStr += 'Z';
+                    }
+                    // 创建UTC时间对象
+                    var utcDate = new Date(utcTimeStr);
+                    // 转换为上海时区（UTC+8）时间字符串（YYYY-MM-DD HH:MM格式）
+                    // 上海时区比UTC快8小时
+                    var shanghaiDate = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
+                    var shanghaiTimeStr = shanghaiDate.getUTCFullYear() + '-' +
+                        String(shanghaiDate.getUTCMonth() + 1).padStart(2, '0') + '-' +
+                        String(shanghaiDate.getUTCDate()).padStart(2, '0') + ' ' +
+                        String(shanghaiDate.getUTCHours()).padStart(2, '0') + ':' +
+                        String(shanghaiDate.getUTCMinutes()).padStart(2, '0');
+                    $elem.text(shanghaiTimeStr);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            // Auto-convert UTC time to Shanghai timezone
+            convertUtcToShanghai();
+        });
+    </script>
 
     {% block scripts %}{% endblock %}
 

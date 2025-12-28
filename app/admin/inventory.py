@@ -14,10 +14,7 @@ from app.admin.forms import StockInForm, SparePartForm, DeleteForm
 @bp.route('/inventory')
 @admin_required
 def inventory():
-    """
-    库存列表页
-    包含：分页、搜索、预警高亮排序
-    """
+    """库存列表：低库存预警优先显示"""
     stmt = select(SparePart)
 
     is_low_stock = (SparePart.current_stock < SparePart.warning_line)
@@ -98,10 +95,7 @@ def edit_part(part_id):
 @bp.route('/inventory/stock_in/<int:part_id>', methods=['POST'])
 @admin_required
 def stock_in(part_id):
-    """
-    快速补货/入库
-    通常由列表页的 Modal 提交 POST 请求触发
-    """
+    """快速补货/入库"""
     form = StockInForm()
 
     if form.validate_on_submit():
@@ -150,7 +144,6 @@ def delete_part(part_id):
 
     if is_used:
         flash(f'无法删除配件 "{part.part_name}"，因为存在关联的历史维修记录。', 'warning')
-        # 这里未来可以扩展为 "逻辑删除" 或 "停用"
         return redirect(url_for('admin.inventory'))
 
     try:

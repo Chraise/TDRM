@@ -11,9 +11,7 @@ from app.admin.forms import UserCreateForm, UserEditForm, DeleteForm
 @bp.route('/users')
 @admin_required
 def user_list():
-    """
-    用户列表页：支持角色筛选（客户端分页和搜索由 DataTables 处理）
-    """
+    """用户列表：支持角色筛选"""
     role_filter = request.args.get('role', 'all')
 
     stmt = select(User)
@@ -25,7 +23,7 @@ def user_list():
     elif role_filter == 'admin':
         stmt = stmt.where(User.role == UserRole.ADMIN)
 
-    # 排序：角色优先级（Admin > Worker > Student） > 状态（正常 > 禁用） > 账号（字母顺序）
+    # 排序：Admin > Worker > Student > 状态(正常>禁用) > 账号
     role_order = case(
         (User.role == UserRole.ADMIN, 1),
         (User.role == UserRole.WORKER, 2),
@@ -33,9 +31,9 @@ def user_list():
         else_=4
     )
     stmt = stmt.order_by(
-        role_order.asc(),      # 角色：Admin在前
-        User.status.desc(),    # 状态：正常(1)在前，禁用(0)在后
-        User.account.asc()     # 账号：字母顺序
+        role_order.asc(),
+        User.status.desc(),
+        User.account.asc()
     )
 
     users = db.session.execute(stmt).scalars().all()
@@ -124,10 +122,7 @@ def user_edit(user_id):
 @bp.route('/users/status/<int:user_id>', methods=['POST'])
 @admin_required
 def user_toggle_status(user_id):
-    """
-    切换用户状态：启用 <-> 禁用
-    注意：防止管理员禁用自己
-    """
+    """切换用户状态：防止管理员禁用自己"""
     if user_id == current_user.user_id:
         flash('无法禁用当前登录的管理员账号', 'warning')
         return redirect(url_for('admin.user_list'))
@@ -148,9 +143,7 @@ def user_toggle_status(user_id):
 @bp.route('/users/reset-pwd/<int:user_id>', methods=['POST'])
 @admin_required
 def user_reset_pwd(user_id):
-    """
-    强制重置用户密码为默认值 (123456)
-    """
+    """重置用户密码为默认值 123456"""
     user = db.session.get(User, user_id)
     if user:
         user.set_password('123456')

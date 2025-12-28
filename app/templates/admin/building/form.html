@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+{% set active_page = 'building_list' %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">{{ title }}</h1>
+    <a href="{{ url_for('admin.building_list') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left fa-sm"></i> 返回
+    </a>
+</div>
+
+<!-- Form Container -->
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Basic Card Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Building Name Field -->
+                    <div class="form-group">
+                        {{ form.building_name.label(class="font-weight-bold") }}
+                        {{ form.building_name(class="form-control" + (" is-invalid" if form.building_name.errors else "")) }}
+                        {% if form.building_name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.building_name.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Location Field -->
+                    <div class="form-group">
+                        {{ form.location.label(class="font-weight-bold") }}
+                        {{ form.location(class="form-control" + (" is-invalid" if form.location.errors else "")) }}
+                        {% if form.location.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.location.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Admin Contact Field -->
+                    <div class="form-group">
+                        {{ form.admin_contact.label(class="font-weight-bold") }}
+                        {{ form.admin_contact(class="form-control" + (" is-invalid" if form.admin_contact.errors else "")) }}
+                        {% if form.admin_contact.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.admin_contact.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ form.submit.label.text }}
+                        </button>
+                        <a href="{{ url_for('admin.building_list') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> 取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
