@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库服务
+  db:
+    image: mysql:8.0
+    container_name: tdrm_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tdrm}
+      MYSQL_USER: ${MYSQL_USER:-tdrm_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tdrm_password}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - tdrm_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Flask Web 应用服务
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tdrm_web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-5000}:5000"
+    environment:
+      # Flask 配置
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      FLASK_APP: TDRM.py
+      FLASK_ENV: ${FLASK_ENV:-production}
+      
+      # 数据库配置
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-tdrm_user}:${MYSQL_PASSWORD:-tdrm_password}@db:3306/${MYSQL_DATABASE:-tdrm}?charset=utf8mb4
+      
+      # 邮件配置（可选）
+      MAIL_SERVER: ${MAIL_SERVER:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USE_TLS: ${MAIL_USE_TLS:-true}
+      MAIL_USE_SSL: ${MAIL_USE_SSL:-false}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_DEFAULT_SENDER: ${MAIL_DEFAULT_SENDER:-}
+    volumes:
+      # 持久化上传的文件
+      - ./app/static/uploads:/app/app/static/uploads
+      # 如果需要持久化数据库文件（使用 SQLite 时）
+      # - ./data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - tdrm_network
+    command: >
+      sh -c "
+        echo '等待数据库就绪...' &&
+        sleep 5 &&
+        echo '运行数据库迁移...' &&
+        flask db upgrade || echo '迁移失败或已是最新版本' &&
+        echo '启动应用...' &&
+        gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 TDRM:app
+      "
+
+volumes:
+  # MySQL 数据持久化
+  mysql_data:
+    driver: local
+
+networks:
+  tdrm_network:
+    driver: bridge
+

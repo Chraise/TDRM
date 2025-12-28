@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, abort
 from sqlalchemy import select, or_, func, case, String, cast, and_
 from sqlalchemy.orm import joinedload, selectinload
 
@@ -6,7 +6,7 @@ from app import db
 from app.admin import bp
 from app.admin.forms import DispatchForm
 from app.decorators import admin_required
-from app.models import RepairOrder, User, OrderStatus, UserRole, DormBuilding, order_assign
+from app.models import RepairOrder, User, OrderStatus, UserRole, DormBuilding, order_assign, MaintenanceRecord
 
 
 @bp.route('/orders')
@@ -168,3 +168,33 @@ def recommend_worker():
         'data': best_worker,
         'message': f"推荐：{best_worker['name']} (当前积压: {best_worker['count']}单)"
     })
+
+
+@bp.route('/orders/detail/<int:order_id>', methods=['GET'])
+@admin_required
+def order_detail(order_id):
+    """工单详情：管理员查看报修信息和维修进度"""
+    stmt = (
+        select(RepairOrder)
+        .where(RepairOrder.order_id == order_id)
+        .options(
+            joinedload(RepairOrder.building),
+            joinedload(RepairOrder.submitter).joinedload(User.building),
+            selectinload(RepairOrder.assigned_workers),
+            selectinload(RepairOrder.maintenance_records)
+            .joinedload(MaintenanceRecord.worker)
+        )
+    )
+    order = db.session.execute(stmt).scalar_one_or_none()
+
+    if not order:
+        abort(404, description="工单不存在")
+
+    # 对维修记录按时间排序
+    if order.maintenance_records:
+        order.maintenance_records.sort(key=lambda x: x.end_time or x.start_time, reverse=True)
+
+    return render_template(
+        'admin/order/detail.html',
+        order=order
+    )

@@ -1,0 +1,267 @@
+{% extends "admin/base.html" %}
+{% from "common/_macros.html" import order_status_badge %}
+{% set active_page = 'order_list' %}
+
+{% block title %}TDRM - 工单详情{% endblock %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">工单详情 #{{ order.order_id }}</h1>
+    <a href="{{ url_for('admin.order_list') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left fa-sm"></i> 返回列表
+    </a>
+</div>
+
+<div class="row">
+    <!-- 左侧主要内容区域 (col-lg-8) -->
+    <div class="col-lg-8">
+
+        <!-- 工单基本信息 Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">报修内容</h6>
+                {{ order_status_badge(order.status.value) }}
+            </div>
+            <div class="card-body">
+                <!-- 报修主题和提交时间 -->
+                <div class="mb-3">
+                    <h5 class="font-weight-bold text-gray-800">{{ order.title }}</h5>
+                    <small class="text-gray-500">
+                        <i class="fas fa-clock mr-1"></i>
+                        提交时间：
+                        <span class="utc-time" data-utc-time="{{ order.submit_time.isoformat() }}Z">
+                            {{ order.submit_time.strftime('%Y-%m-%d %H:%M') }}
+                        </span>
+                    </small>
+                    {% if order.finish_time %}
+                        <br>
+                        <small class="text-gray-500">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            完成时间：
+                            <span class="utc-time" data-utc-time="{{ order.finish_time.isoformat() }}Z">
+                                {{ order.finish_time.strftime('%Y-%m-%d %H:%M') }}
+                            </span>
+                        </small>
+                    {% endif %}
+                </div>
+
+                <!-- 详细描述 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">详细描述：</h6>
+                    <p class="text-gray-800">
+                        {% if order.description %}
+                            {{ order.description }}
+                        {% else %}
+                            <span class="text-muted">（未提供详细描述）</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- 故障位置 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">故障位置：</h6>
+                    <p class="text-gray-800">
+                        <i class="fas fa-map-marker-alt mr-1 text-primary"></i>
+                        {{ order.building.building_name }} - {{ order.repair_location }}
+                    </p>
+                </div>
+
+                <!-- 图片展示 -->
+                {% if order.image_urls %}
+                    {% set image_list = order.image_urls.split(',') %}
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold text-gray-700 mb-2">故障图片：</h6>
+                        <div class="row">
+                            {% for image_url in image_list %}
+                                {% if image_url.strip() %}
+                                    <div class="col-md-4 col-sm-6 mb-3">
+                                        <a href="{{ url_for('static', filename=image_url.strip()) }}" target="_blank" class="d-block">
+                                            <img src="{{ url_for('static', filename=image_url.strip()) }}" 
+                                                 alt="故障图片" 
+                                                 class="img-fluid img-thumbnail shadow-sm"
+                                                 style="max-height: 200px; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 维修记录 Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">维修进度与记录</h6>
+            </div>
+            <div class="card-body">
+                {% if order.maintenance_records %}
+                    <div class="list-group list-group-flush">
+                        {% for record in order.maintenance_records %}
+                            <div class="list-group-item px-0 py-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="mr-3">
+                                        <i class="fas fa-user-tools fa-2x text-info"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="font-weight-bold text-gray-800 mb-1">
+                                            <i class="fas fa-user mr-1"></i>{{ record.worker.username }}
+                                        </h6>
+                                        <p class="text-gray-600 mb-1">
+                                            <i class="fas fa-calendar-alt mr-1"></i>
+                                            {% if record.end_time %}
+                                                处理时间：
+                                                <span class="utc-time" data-utc-time="{{ record.end_time.isoformat() }}Z">
+                                                    {{ record.end_time.strftime('%m-%d %H:%M') }}
+                                                </span>
+                                            {% elif record.start_time %}
+                                                开始时间：
+                                                <span class="utc-time" data-utc-time="{{ record.start_time.isoformat() }}Z">
+                                                    {{ record.start_time.strftime('%m-%d %H:%M') }}
+                                                </span>
+                                            {% else %}
+                                                （时间未记录）
+                                            {% endif %}
+                                        </p>
+                                        {% if record.result_desc %}
+                                            <p class="text-gray-800 mt-2 mb-0">
+                                                <strong>处理结果：</strong>{{ record.result_desc }}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% if not loop.last %}
+                                <hr class="my-0">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-tools fa-3x text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 mb-0">等待维修工上门</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+    <!-- 右侧侧边信息区域 (col-lg-4) -->
+    <div class="col-lg-4">
+
+        <!-- 报修人信息 Card -->
+        <div class="card border-left-primary shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">报修人信息</h6>
+            </div>
+            <div class="card-body">
+                {% if order.submitter %}
+                    <p class="mb-2">
+                        <i class="fas fa-user mr-2 text-primary"></i>
+                        <strong>{{ order.submitter.username }}</strong>
+                    </p>
+                    <p class="mb-2 text-gray-600 small">
+                        <i class="fas fa-envelope mr-2"></i>{{ order.submitter.email }}
+                    </p>
+                    {% if order.submitter.building %}
+                        <p class="mb-0 text-gray-600 small">
+                            <i class="fas fa-building mr-2"></i>{{ order.submitter.building.building_name }}
+                            {% if order.submitter.room_no %}
+                                - {{ order.submitter.room_no }}
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-gray-500 mb-0">报修人信息不可用</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 指派人员 Card -->
+        <div class="card border-left-info shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">指派维修人员</h6>
+            </div>
+            <div class="card-body">
+                {% if order.assigned_workers %}
+                    {% for worker in order.assigned_workers %}
+                        <div class="mb-3 {% if not loop.last %}border-bottom pb-3{% endif %}">
+                            <p class="mb-1">
+                                <i class="fas fa-user mr-2 text-info"></i>
+                                <strong>{{ worker.username }}</strong>
+                            </p>
+                            <p class="mb-0 text-gray-600 small">
+                                <i class="fas fa-envelope mr-2"></i>{{ worker.email }}
+                            </p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-gray-500 mb-0">
+                        <i class="fas fa-hourglass-half mr-2"></i>正在等待派单...
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 状态信息 Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">工单状态</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-gray-600 text-center mb-0">
+                    当前状态：{{ order_status_badge(order.status.value) }}
+                </p>
+                {% if order.rating %}
+                    <!-- 评价信息显示 -->
+                    <div class="text-center mt-3 pt-3 border-top">
+                        <h6 class="font-weight-bold text-gray-700 mb-2">学生评价</h6>
+                        <div class="mb-2">
+                            {% for i in range(1, 6) %}
+                                {% if i <= order.rating %}
+                                    <i class="fas fa-star text-warning fa-lg"></i>
+                                {% else %}
+                                    <i class="far fa-star text-gray-300 fa-lg"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% if order.feedback %}
+                            <p class="text-gray-800 text-left mb-0">
+                                <strong>反馈：</strong>{{ order.feedback }}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 楼宇联系 Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">楼宇信息</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <i class="fas fa-building mr-2 text-primary"></i>
+                    <strong>{{ order.building.building_name }}</strong>
+                </p>
+                {% if order.building.admin_contact %}
+                    <p class="mb-0">
+                        <i class="fas fa-phone mr-2 text-primary"></i>
+                        宿管电话：<a href="tel:{{ order.building.admin_contact }}">{{ order.building.admin_contact }}</a>
+                    </p>
+                {% else %}
+                    <p class="mb-0 text-gray-500">
+                        <i class="fas fa-phone mr-2"></i>
+                        宿管电话：未提供
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+

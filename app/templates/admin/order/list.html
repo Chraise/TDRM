@@ -115,18 +115,22 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if order.status != OrderStatus.COMPLETED and order.status != OrderStatus.CANCELLED %}
-                                    <button type="button" class="btn btn-primary btn-sm" 
-                                            data-toggle="modal" 
-                                            data-target="#dispatchModal"
-                                            data-id="{{ order.order_id }}"
-                                            data-title="{{ order.title }}"
-                                            data-location="{% if order.building %}{{ order.building.building_name }} - {{ order.repair_location }}{% else %}{{ order.repair_location or '-' }}{% endif %}">
-                                        <i class="fas fa-user-check"></i> 派单
-                                    </button>
-                                {% else %}
-                                    <span class="text-muted">-</span>
-                                {% endif %}
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('admin.order_detail', order_id=order.order_id) }}" 
+                                       class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i> 详情
+                                    </a>
+                                    {% if order.status != OrderStatus.COMPLETED and order.status != OrderStatus.CANCELLED %}
+                                        <button type="button" class="btn btn-primary btn-sm" 
+                                                data-toggle="modal" 
+                                                data-target="#dispatchModal"
+                                                data-id="{{ order.order_id }}"
+                                                data-title="{{ order.title }}"
+                                                data-location="{% if order.building %}{{ order.building.building_name }} - {{ order.repair_location }}{% else %}{{ order.repair_location or '-' }}{% endif %}">
+                                            <i class="fas fa-user-check"></i> 派单
+                                        </button>
+                                    {% endif %}
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
