@@ -56,3 +56,4 @@ scripts_for_tests/
 # 上传的文件（可选，如果需要持久化应该使用卷）
 # app/static/uploads/
 
+
