@@ -1,0 +1,262 @@
+{% extends "worker/base.html" %}
+
+{% block title %}TDRM - 填写维修报告{% endblock %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">填写维修报告</h1>
+    <a href="{{ url_for('worker.task_list') }}" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left fa-sm"></i> 返回任务列表
+    </a>
+</div>
+
+<div class="row">
+    <!-- 左侧列：工单详情 (col-lg-4) -->
+    <div class="col-lg-4">
+        <!-- 故障详情 Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">故障详情</h6>
+            </div>
+            <div class="card-body">
+                <!-- 位置 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">位置：</h6>
+                    <p class="text-gray-800 mb-0">
+                        <i class="fas fa-map-marker-alt mr-1 text-primary"></i>
+                        {{ order.building.building_name }} - {{ order.repair_location }}
+                    </p>
+                </div>
+
+                <!-- 提交人 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">提交人：</h6>
+                    <p class="text-gray-800 mb-0">
+                        <i class="fas fa-user mr-1 text-primary"></i>
+                        {{ order.submitter.username }}
+                    </p>
+                </div>
+
+                <!-- 联系方式 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">联系方式：</h6>
+                    <p class="text-gray-800 mb-0">
+                        <i class="fas fa-envelope mr-1 text-primary"></i>
+                        {% if order.submitter.email %}
+                            {{ order.submitter.email }}
+                        {% else %}
+                            <span class="text-muted">（未提供）</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- 标题 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">报修主题：</h6>
+                    <p class="text-gray-800 mb-0">{{ order.title }}</p>
+                </div>
+
+                <!-- 详细描述 -->
+                <div class="mb-3">
+                    <h6 class="font-weight-bold text-gray-700">详细描述：</h6>
+                    <p class="text-gray-800 mb-0">
+                        {% if order.description %}
+                            {{ order.description }}
+                        {% else %}
+                            <span class="text-muted">（未提供详细描述）</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- 故障图片 -->
+                {% if order.image_urls %}
+                    {% set image_list = order.image_urls.split(',') %}
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold text-gray-700 mb-2">故障图片：</h6>
+                        <div class="row">
+                            {% for image_url in image_list %}
+                                {% if image_url.strip() %}
+                                    <div class="col-12 mb-2">
+                                        <a href="{{ url_for('static', filename=image_url.strip()) }}" target="_blank" class="d-block">
+                                            <img src="{{ url_for('static', filename=image_url.strip()) }}" 
+                                                 alt="故障图片" 
+                                                 class="img-fluid img-thumbnail shadow-sm"
+                                                 style="max-height: 150px; object-fit: cover; width: 100%;">
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧列：维修报告表单 (col-lg-8) -->
+    <div class="col-lg-8">
+        <!-- 维修报告 Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">维修报告</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('worker.finish_order', order_id=order.order_id) }}" id="finishForm">
+                    {{ form.hidden_tag() }}
+
+                    <!-- 时间追踪 -->
+                    <div class="form-group">
+                        {{ form.start_time.label(class="font-weight-bold text-gray-700") }}
+                        {{ form.start_time(class="form-control") }}
+                        {% if form.start_time.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.start_time.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> 请按本地时间（北京时间）输入
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.end_time.label(class="font-weight-bold text-gray-700") }}
+                        {{ form.end_time(class="form-control") }}
+                        {% if form.end_time.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.end_time.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> 请按本地时间（北京时间）输入，人工费用将根据维修时长自动计算（50元/小时）。
+                        </small>
+                    </div>
+
+                    <!-- 维修结果 -->
+                    <div class="form-group">
+                        {{ form.result_desc.label(class="font-weight-bold text-gray-700") }}
+                        {{ form.result_desc(class="form-control") }}
+                        {% if form.result_desc.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.result_desc.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 备件使用（动态部分） -->
+                    <div class="form-group">
+                        <label class="font-weight-bold text-gray-700">备件使用</label>
+                        <button type="button" class="btn btn-info btn-sm mb-3" id="addPartBtn">
+                            <i class="fas fa-plus fa-sm"></i> 添加备件
+                        </button>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="partsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50%;">备件名称（库存）</th>
+                                        <th style="width: 25%;">数量</th>
+                                        <th style="width: 25%;">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="partsTableBody">
+                                    <!-- 初始为空，通过JavaScript动态添加 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="form-group mb-0">
+                        <button type="button" class="btn btn-success btn-block" id="submitBtn" data-toggle="modal" data-target="#confirmSubmitModal">
+                            <i class="fas fa-check"></i> 提交维修报告
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 确认提交 Modal -->
+<div class="modal fade" id="confirmSubmitModal" tabindex="-1" role="dialog" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmSubmitModalLabel">确认提交维修报告</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>您确定要提交维修报告吗？</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>注意：</strong>提交后库存将被扣除，此操作不可撤销。
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" id="confirmSubmitBtn">
+                    <i class="fas fa-check"></i> 确认提交
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 备件行模板 -->
+<template id="partRowTemplate">
+    <tr>
+        <td>
+            <select name="part_ids[]" class="form-control" required>
+                <option value="">-- 请选择备件 --</option>
+                {% for part in parts %}
+                    <option value="{{ part.part_id }}">
+                        {{ part.part_name }}{% if part.spec %} ({{ part.spec }}){% endif %} - 库存: {{ part.current_stock }}
+                    </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
+            <input type="number" name="quantities[]" class="form-control" value="1" min="1" required>
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger btn-sm removePartBtn">
+                <i class="fas fa-trash fa-sm"></i> 删除
+            </button>
+        </td>
+    </tr>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // 获取模板内容
+    const template = document.getElementById('partRowTemplate');
+    const tbody = document.getElementById('partsTableBody');
+
+    // 添加备件行
+    $('#addPartBtn').on('click', function() {
+        const newRow = template.content.cloneNode(true);
+        tbody.appendChild(newRow);
+    });
+
+    // 删除备件行（使用事件委托）
+    $(tbody).on('click', '.removePartBtn', function() {
+        $(this).closest('tr').remove();
+    });
+
+    // 提交确认：点击确认按钮后提交表单
+    $('#confirmSubmitBtn').on('click', function() {
+        $('#finishForm').submit();
+    });
+});
+</script>
+{% endblock %}

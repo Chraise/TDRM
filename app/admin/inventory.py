@@ -18,38 +18,22 @@ def inventory():
     库存列表页
     包含：分页、搜索、预警高亮排序
     """
-    page = request.args.get('page', 1, type=int)
-    search_query = request.args.get('q', '').strip()
-
     stmt = select(SparePart)
-
-    if search_query:
-        stmt = stmt.where(
-            or_(
-                SparePart.part_name.contains(search_query),
-                SparePart.spec.contains(search_query)
-            )
-        )
 
     is_low_stock = (SparePart.current_stock < SparePart.warning_line)
     stmt = stmt.order_by(is_low_stock.desc(), SparePart.part_id.desc())
 
-    pagination = db.paginate(
-        stmt,
-        page=page,
-        per_page=current_app.config.get('POSTS_PER_PAGE', 10),
-        error_out=False
-    )
+    parts = db.session.execute(stmt).scalars().all()
 
     stock_in_form = StockInForm()
     delete_form = DeleteForm()
 
     return render_template(
         'admin/inventory/list.html',
-        pagination=pagination,
+        parts=parts,
         stock_in_form=stock_in_form,
         delete_form=delete_form,
-        search_query=search_query
+        posts_per_page=current_app.config.get('POSTS_PER_PAGE', 10)
     )
 
 

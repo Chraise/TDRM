@@ -35,6 +35,9 @@ def create_app(config_class=Config):
     from app.student import bp as student_bp
     app.register_blueprint(student_bp, url_prefix='/student')
 
+    from app.worker import bp as worker_bp
+    app.register_blueprint(worker_bp, url_prefix='/worker')
+
     return app
 
 

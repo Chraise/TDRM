@@ -1,33 +1,38 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
-from sqlalchemy import select, or_, func
+from sqlalchemy import select, or_, func, case, String, cast
 from sqlalchemy.orm import joinedload, selectinload
 
 from app import db
 from app.admin import bp
 from app.admin.forms import DispatchForm  # 确保 forms.py 中有 DispatchForm
 from app.decorators import admin_required
-from app.models import RepairOrder, User, OrderStatus, UserRole
-
-from sqlalchemy import select, or_, case  # 记得导入 case
+from app.models import RepairOrder, User, OrderStatus, UserRole, DormBuilding
 
 
 @bp.route('/orders')
 @admin_required
 def order_list():
     """
-    管理员：工单列表页 (高性能优化版 + 智能排序)
+    管理员：工单列表页 (高性能优化版 + 智能排序 + 搜索)
     """
     page = request.args.get('page', 1, type=int)
     per_page = 10
     filter_type = request.args.get('filter', 'active')
+    search_query = request.args.get('q', '').strip()
 
+    # 构建基础查询，需要 join 相关表以便在搜索时使用
     stmt = select(RepairOrder).options(
         joinedload(RepairOrder.submitter),
         joinedload(RepairOrder.building),
         selectinload(RepairOrder.assigned_workers)
     )
 
-    # --- 筛选逻辑 ---
+    # 如果需要进行搜索，需要 join 相关表
+    if search_query:
+        stmt = stmt.join(User, RepairOrder.submitter_id == User.user_id)\
+                   .outerjoin(DormBuilding, RepairOrder.repair_building_id == DormBuilding.building_id)
+
+    # --- 状态筛选逻辑 ---
     if filter_type == 'active':
         stmt = stmt.where(
             or_(
@@ -36,6 +41,16 @@ def order_list():
                 RepairOrder.status == OrderStatus.IN_PROGRESS
             )
         )
+
+    # --- 搜索逻辑 ---
+    if search_query:
+        search_filter = or_(
+            RepairOrder.title.ilike(f'%{search_query}%'),
+            cast(RepairOrder.order_id, String).ilike(f'%{search_query}%'),
+            User.username.ilike(f'%{search_query}%'),
+            DormBuilding.building_name.ilike(f'%{search_query}%')
+        )
+        stmt = stmt.where(search_filter)
 
     # --- 核心：智能排序逻辑 (Smart Ordering) ---
     # 1. 定义状态权重：Pending(1) > Assigned(2) > InProgress(3) > 其他(4)
@@ -66,18 +81,18 @@ def order_list():
             RepairOrder.submit_time.desc()  # 历史单子按最新显示
         )
 
-    # --- 执行分页 ---
-    pagination = db.paginate(stmt, page=page, per_page=per_page, error_out=False)
+    # --- 执行查询（返回所有数据，由 DataTables 进行客户端分页） ---
+    orders = db.session.execute(stmt).scalars().unique().all()
 
     dispatch_form = DispatchForm()
 
     return render_template(
         'admin/order/list.html',
-        orders=pagination.items,
-        pagination=pagination,
+        orders=orders,
         dispatch_form=dispatch_form,
         current_filter=filter_type,
-        OrderStatus=OrderStatus
+        OrderStatus=OrderStatus,
+        posts_per_page=10
     )
 
 

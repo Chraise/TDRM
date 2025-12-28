@@ -12,11 +12,9 @@ from app.admin.forms import UserCreateForm, UserEditForm, DeleteForm
 @admin_required
 def user_list():
     """
-    用户列表页：支持分页、角色筛选、关键词搜索
+    用户列表页：支持角色筛选（客户端分页和搜索由 DataTables 处理）
     """
-    page = request.args.get('page', 1, type=int)
     role_filter = request.args.get('role', 'all')
-    search_query = request.args.get('q', '').strip()
 
     stmt = select(User)
 
@@ -26,14 +24,6 @@ def user_list():
         stmt = stmt.where(User.role == UserRole.WORKER)
     elif role_filter == 'admin':
         stmt = stmt.where(User.role == UserRole.ADMIN)
-
-    if search_query:
-        stmt = stmt.where(
-            or_(
-                User.account.ilike(f'%{search_query}%'),
-                User.username.ilike(f'%{search_query}%')
-            )
-        )
 
     # 排序：角色优先级（Admin > Worker > Student） > 状态（正常 > 禁用） > 账号（字母顺序）
     role_order = case(
@@ -48,16 +38,15 @@ def user_list():
         User.account.asc()     # 账号：字母顺序
     )
 
-    pagination = db.paginate(stmt, page=page, per_page=current_app.config.get('USERS_PER_PAGE', 10), error_out=False)
+    users = db.session.execute(stmt).scalars().all()
 
     delete_form = DeleteForm()
 
     return render_template('admin/user/list.html',
-                           users=pagination.items,
-                           pagination=pagination,
+                           users=users,
                            current_filter=role_filter,
-                           search_query=search_query,
-                           delete_form=delete_form)
+                           delete_form=delete_form,
+                           users_per_page=current_app.config.get('USERS_PER_PAGE', 10))
 
 
 @bp.route('/users/add', methods=['GET', 'POST'])

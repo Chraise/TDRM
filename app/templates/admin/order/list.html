@@ -258,21 +258,35 @@
         <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
                 <a class="nav-link {{ 'active' if current_filter == 'active' else '' }}" 
-                   href="{{ url_for('admin.order_list', filter='active') }}">
+                   href="{{ url_for('admin.order_list', filter='active', q=search_query or '') }}">
                     <i class="fas fa-tasks"></i> 待处理工单
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ 'active' if current_filter == 'all' else '' }}" 
-                   href="{{ url_for('admin.order_list', filter='all') }}">
+                   href="{{ url_for('admin.order_list', filter='all', q=search_query or '') }}">
                     <i class="fas fa-history"></i> 全部历史
                 </a>
             </li>
         </ul>
     </div>
     <div class="card-body">
+        <!-- Search Area -->
+        <form method="GET" action="{{ url_for('admin.order_list') }}" class="mb-3" id="searchForm">
+            <input type="hidden" name="filter" value="{{ current_filter }}" id="filterInput">
+            <div class="input-group" style="max-width: 400px;">
+                <input type="text" name="q" class="form-control" placeholder="搜索工单号、标题、报修人、位置..." 
+                       value="" id="searchInput">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="searchBtn">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </div>
+            </div>
+        </form>
+
         <div class="table-responsive">
-            <table class="table table-bordered" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -357,66 +371,6 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
-        {% if pagination.pages > 1 %}
-            <nav aria-label="工单列表分页导航" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if pagination.has_prev %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('admin.order_list', page=pagination.prev_num, filter=current_filter) }}" aria-label="上一页">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">上一页</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="上一页">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">上一页</span>
-                            </a>
-                        </li>
-                    {% endif %}
-
-                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                        {% if page_num %}
-                            {% if page_num == pagination.page %}
-                                <li class="page-item active">
-                                    <a class="page-link" href="#">{{ page_num }} <span class="sr-only">(当前)</span></a>
-                                </li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ url_for('admin.order_list', page=page_num, filter=current_filter) }}">{{ page_num }}</a>
-                                </li>
-                            {% endif %}
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#">...</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if pagination.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="{{ url_for('admin.order_list', page=pagination.next_num, filter=current_filter) }}" aria-label="下一页">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">下一页</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="下一页">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">下一页</span>
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            <div class="text-center text-gray-600 small mt-2">
-                显示第 {{ (pagination.page - 1) * pagination.per_page + 1 }} - {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }} 条，共 {{ pagination.total }} 条记录
-            </div>
-        {% endif %}
     </div>
 </div>
 
@@ -494,10 +448,53 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- Page level plugins -->
+<script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Initialize DataTables
+        var table = $('#dataTable').DataTable({
+            ordering: false,
+            lengthChange: false,
+            searching: true,
+            dom: 'rt<"d-flex justify-content-between align-items-center"<"info"i><"pagination"p>>',
+            pageLength: {{ posts_per_page }},
+            language: {
+                paginate: {
+                    first: "首页",
+                    previous: "上一页",
+                    next: "下一页",
+                    last: "末页"
+                },
+                info: "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                infoEmpty: "显示第 0 至 0 项结果，共 0 项",
+                infoFiltered: "(从 _MAX_ 项结果中过滤)"
+            }
+        });
+
+        // 自定义搜索框功能
+        $('#searchBtn').on('click', function() {
+            table.search($('#searchInput').val()).draw();
+        });
+
+        // 按回车键搜索
+        $('#searchInput').on('keyup', function(e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                table.search(this.value).draw();
+            }
+        });
+
+        // 阻止表单提交
+        $('#searchForm').on('submit', function(e) {
+            e.preventDefault();
+            table.search($('#searchInput').val()).draw();
+        });
+
+        // Select2 and other existing code
         // Initialize Select2 on worker select field
         $('#workerSelect').select2({
             theme: 'bootstrap4',

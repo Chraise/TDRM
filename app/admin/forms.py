@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DecimalField, SubmitField, SelectField, PasswordField, \
-    SelectMultipleField
+    SelectMultipleField, DateField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional, Email, ValidationError, Regexp
 from sqlalchemy import select
 from app import db
@@ -206,3 +206,12 @@ class DispatchForm(FlaskForm):
     def validate_worker_ids(self, field):
         if not field.data or len(field.data) == 0:
             raise ValidationError('请至少选择一位维修人员。')
+
+
+class DashboardFilterForm(FlaskForm):
+    """
+    仪表板筛选表单：用于选择日期范围
+    """
+    start_date = DateField('开始日期', validators=[Optional()])
+    end_date = DateField('结束日期', validators=[Optional()])
+    submit = SubmitField('应用筛选')

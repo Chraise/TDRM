@@ -97,7 +97,8 @@ def init_data():
         building3 = DormBuilding.query.filter_by(building_id=3).first()
         
         # 创建不同状态的工单
-        now = datetime.now(timezone.utc)
+        # 基准时间设为2025年12月27日，所有时间都在前一周内（2025.12.20-2025.12.27）
+        now = datetime(2025, 12, 27, 23, 59, 59, tzinfo=timezone.utc)
         
         orders = [
             # Pending 状态 - 待处理
@@ -142,8 +143,8 @@ def init_data():
                 title='空调不制冷',
                 description='空调制冷效果不好，需要检查',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=10),
-                finish_time=now - timedelta(days=8),
+                submit_time=now - timedelta(days=5, hours=12),
+                finish_time=now - timedelta(days=4),
                 rating=None,
                 feedback=None
             ),
@@ -156,8 +157,8 @@ def init_data():
                 title='网络接口故障',
                 description='房间网络接口无法连接，无法上网',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=15),
-                finish_time=now - timedelta(days=13),
+                submit_time=now - timedelta(days=4),
+                finish_time=now - timedelta(days=3),
                 rating=5,
                 feedback='维修及时，服务态度很好，问题已完全解决'
             ),
@@ -171,7 +172,7 @@ def init_data():
                 description='窗户无法完全关闭，有缝隙漏风',
                 status=OrderStatus.COMPLETED,
                 submit_time=now - timedelta(days=7),
-                finish_time=now - timedelta(days=5),
+                finish_time=now - timedelta(days=6),
                 rating=None,
                 feedback=None
             ),
@@ -217,8 +218,8 @@ def init_data():
                 title='墙面裂缝',
                 description='房间墙面出现裂缝，需要修补',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=20),
-                finish_time=now - timedelta(days=18),
+                submit_time=now - timedelta(days=5),
+                finish_time=now - timedelta(days=4, hours=12),
                 rating=3,
                 feedback='维修速度较慢，但最终问题得到解决'
             ),
@@ -265,7 +266,7 @@ def init_data():
                 title='暖气不热（多次维修）',
                 description='暖气一直不热，之前维修过但问题仍然存在',
                 status=OrderStatus.IN_PROGRESS,
-                submit_time=now - timedelta(days=12)
+                submit_time=now - timedelta(days=6, hours=12)
             ),
             # 测试场景：Completed状态，1星评价
             RepairOrder(
@@ -276,8 +277,8 @@ def init_data():
                 title='马桶堵塞',
                 description='马桶严重堵塞，无法正常使用',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=25),
-                finish_time=now - timedelta(days=23),
+                submit_time=now - timedelta(days=6),
+                finish_time=now - timedelta(days=5),
                 rating=1,
                 feedback='维修人员态度较差，问题反复出现'
             ),
@@ -290,8 +291,8 @@ def init_data():
                 title='地漏反味',
                 description='洗手间地漏有异味反出',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=30),
-                finish_time=now - timedelta(days=28),
+                submit_time=now - timedelta(days=7),
+                finish_time=now - timedelta(days=6, hours=12),
                 rating=2,
                 feedback='问题有所改善，但未完全解决'
             ),
@@ -304,8 +305,8 @@ def init_data():
                 title='插座无电',
                 description='房间内某个插座突然没电了',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=16),
-                finish_time=now - timedelta(days=14),
+                submit_time=now - timedelta(days=3, hours=12),
+                finish_time=now - timedelta(days=3),
                 rating=4,
                 feedback='维修及时，服务态度好，问题解决到位'
             ),
@@ -330,8 +331,8 @@ def init_data():
                 description='房间地板有部分区域翘起，有安全隐患',
                 image_urls='uploads/test_image_3.jpg',
                 status=OrderStatus.COMPLETED,
-                submit_time=now - timedelta(days=9),
-                finish_time=now - timedelta(days=7),
+                submit_time=now - timedelta(days=4),
+                finish_time=now - timedelta(days=3, hours=12),
                 rating=None,
                 feedback=None
             ),
@@ -344,7 +345,7 @@ def init_data():
                 title='中央空调故障（复杂问题）',
                 description='中央空调无法制冷，需要全面检修',
                 status=OrderStatus.IN_PROGRESS,
-                submit_time=now - timedelta(days=11)
+                submit_time=now - timedelta(days=6)
             ),
         ]
         
@@ -409,8 +410,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order4.order_id,
                     worker_id=worker1.user_id,
-                    start_time=now - timedelta(days=9),
-                    end_time=now - timedelta(days=8),
+                    start_time=now - timedelta(days=5),
+                    end_time=now - timedelta(days=4),
                     result_desc='检查发现空调滤网堵塞，已清洗滤网，制冷效果恢复正常',
                     labor_cost=None
                 )
@@ -423,8 +424,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order5.order_id,
                     worker_id=worker1.user_id,
-                    start_time=now - timedelta(days=14),
-                    end_time=now - timedelta(days=13),
+                    start_time=now - timedelta(days=4),
+                    end_time=now - timedelta(days=3),
                     result_desc='网络接口模块损坏，已更换新的接口模块，网络连接正常',
                     labor_cost=None
                 )
@@ -437,8 +438,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order6.order_id,
                     worker_id=worker2.user_id,
-                    start_time=now - timedelta(days=6),
-                    end_time=now - timedelta(days=5),
+                    start_time=now - timedelta(days=7),
+                    end_time=now - timedelta(days=6),
                     result_desc='窗户轨道变形，已调整轨道并更换密封条，窗户可正常关闭',
                     labor_cost=None
                 )
@@ -451,8 +452,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order10.order_id,
                     worker_id=worker1.user_id,
-                    start_time=now - timedelta(days=19),
-                    end_time=now - timedelta(days=18),
+                    start_time=now - timedelta(days=5),
+                    end_time=now - timedelta(days=4, hours=12),
                     result_desc='墙面裂缝已用腻子填补并重新粉刷，外观恢复正常',
                     labor_cost=None
                 )
@@ -466,8 +467,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order14.order_id,
                     worker_id=worker3.user_id,
-                    start_time=now - timedelta(days=11),
-                    end_time=now - timedelta(days=10),
+                    start_time=now - timedelta(days=6),
+                    end_time=now - timedelta(days=5, hours=12),
                     result_desc='第一次维修：清洗了暖气管道，但问题仍然存在，需要进一步检查',
                     labor_cost=None
                 )
@@ -479,7 +480,7 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order14.order_id,
                     worker_id=worker3.user_id,
-                    start_time=now - timedelta(days=10),
+                    start_time=now - timedelta(days=5, hours=12),
                     end_time=None,  # 测试：只有start_time，没有end_time
                     result_desc='第二次维修：发现是暖气阀门故障，正在更换中...',
                     labor_cost=None
@@ -494,8 +495,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order15.order_id,
                     worker_id=worker4.user_id,
-                    start_time=now - timedelta(days=24),
-                    end_time=now - timedelta(days=23),
+                    start_time=now - timedelta(days=6),
+                    end_time=now - timedelta(days=5),
                     result_desc='使用疏通工具处理，问题暂时解决，但可能存在反复',
                     labor_cost=None
                 )
@@ -509,8 +510,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order16.order_id,
                     worker_id=worker4.user_id,
-                    start_time=now - timedelta(days=29),
-                    end_time=now - timedelta(days=28),
+                    start_time=now - timedelta(days=7),
+                    end_time=now - timedelta(days=6, hours=12),
                     result_desc='更换了地漏盖，异味有所减少，但未完全解决',
                     labor_cost=None
                 )
@@ -524,8 +525,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order17.order_id,
                     worker_id=worker1.user_id,
-                    start_time=now - timedelta(days=15),
-                    end_time=now - timedelta(days=14),
+                    start_time=now - timedelta(days=3, hours=12),
+                    end_time=now - timedelta(days=3),
                     result_desc='检查发现是线路接触不良，已重新接线并加固，插座恢复正常使用',
                     labor_cost=None
                 )
@@ -554,7 +555,7 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order9.order_id,
                     worker_id=worker2.user_id,
-                    start_time=now - timedelta(days=5),
+                    start_time=now - timedelta(days=6),
                     end_time=None,  # 只有start_time，维修中
                     result_desc='使用疏通工具清理下水道，并使用防水胶带加固管道连接处',
                     labor_cost=None
@@ -569,8 +570,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order19.order_id,
                     worker_id=worker2.user_id,
-                    start_time=now - timedelta(days=8),
-                    end_time=now - timedelta(days=7),
+                    start_time=now - timedelta(days=4),
+                    end_time=now - timedelta(days=3, hours=12),
                     result_desc='地板翘起是由于受潮导致，已更换损坏的地板块，并做了防潮处理',
                     labor_cost=None
                 )
@@ -585,8 +586,8 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order20.order_id,
                     worker_id=worker1.user_id,
-                    start_time=now - timedelta(days=10),
-                    end_time=now - timedelta(days=10),
+                    start_time=now - timedelta(days=6),
+                    end_time=now - timedelta(days=6, hours=1),
                     result_desc='初步检查：发现是制冷剂泄漏，需要添加制冷剂',
                     labor_cost=None
                 )
@@ -598,7 +599,7 @@ def init_data():
                     record_id=record_id_counter,
                     order_id=order20.order_id,
                     worker_id=worker3.user_id,
-                    start_time=now - timedelta(days=10),
+                    start_time=now - timedelta(days=5, hours=12),
                     end_time=None,  # 只有start_time，正在处理
                     result_desc='正在添加制冷剂并检查是否还有其他故障',
                     labor_cost=None
