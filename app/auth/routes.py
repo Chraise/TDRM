@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for, request
 from urllib.parse import urlsplit
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 
 from app.auth import bp
-from app.auth.forms import LoginForm, ResetPasswordRequestForm, ResetPasswordForm
+from app.auth.forms import LoginForm, ResetPasswordRequestForm, ResetPasswordForm, ChangePasswordForm
 from app import db
 import sqlalchemy as sa
 
@@ -80,3 +80,29 @@ def reset_password(token):
         flash('您的密码已成功重置')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
+
+
+@bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    """修改密码"""
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        # 验证旧密码
+        if not current_user.check_password(form.old_password.data):
+            flash('旧密码错误', 'error')
+            return render_template('auth/change_password.html', form=form)
+        
+        # 检查新密码是否与旧密码相同
+        if current_user.check_password(form.password.data):
+            flash('新密码不能与旧密码相同', 'error')
+            return render_template('auth/change_password.html', form=form)
+        
+        # 设置新密码
+        current_user.set_password(form.password.data)
+        db.session.commit()
+        flash('密码修改成功，请使用新密码重新登录', 'success')
+        logout_user()
+        return redirect(url_for('auth.login'))
+    
+    return render_template('auth/change_password.html', form=form)

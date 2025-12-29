@@ -28,3 +28,14 @@ class ResetPasswordForm(FlaskForm):
         EqualTo('password', message="两次输入的密码不一致")
     ])
     submit = SubmitField('重置密码')
+
+
+class ChangePasswordForm(FlaskForm):
+    """修改密码表单"""
+    old_password = PasswordField('旧密码', validators=[DataRequired(message="请输入旧密码")])
+    password = PasswordField('新密码', validators=[DataRequired(message="请输入新密码")])
+    confirm = PasswordField('确认密码', validators=[
+        DataRequired(message="请确认密码"),
+        EqualTo('password', message="两次输入的密码不一致")
+    ])
+    submit = SubmitField('修改密码')
