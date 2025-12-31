@@ -13,17 +13,14 @@ from app.models import (
 )
 
 app = create_app()
-# ====================================================
 
 fake = Faker('zh_CN')
 
-# ================= 配置参数 =================
 BASE_DATE = datetime(2025, 12, 28, 12, 0, 0, tzinfo=timezone.utc)
 TOTAL_STUDENTS = 80
 TOTAL_WORKERS = 5
 TOTAL_ORDERS = 150
 
-# 清华风格的楼宇列表
 TSINGHUA_BUILDINGS = [
     {"name": "紫荆学生公寓1号楼", "loc": "紫荆区东北侧"},
     {"name": "紫荆学生公寓2号楼", "loc": "紫荆区东侧"},
@@ -33,7 +30,6 @@ TSINGHUA_BUILDINGS = [
     {"name": "文苑3号楼", "loc": "西北校区"},
 ]
 
-# 常见维修配件
 SPARE_PARTS_DATA = [
     {"name": "LED吸顶灯模组", "spec": "24W/白光", "unit": "个", "price": "18.5", "stock": 50},
     {"name": "公牛五孔插座", "spec": "86型/白色", "unit": "个", "price": "12.0", "stock": 100},
@@ -118,7 +114,7 @@ def seed_data():
     
     # 3.1 管理员 (保持 admin, 如需 10 位数请改为 '2010000000')
     admin = User(
-        account='admin',
+        account='2010000000',
         username='系统管理员',
         email='admin@tsinghua.edu.cn',
         role=UserRole.ADMIN,

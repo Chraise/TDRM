@@ -14,12 +14,7 @@ def send_async_email(app, msg):
 
 
 def send_password_reset_email(user):
-    """
-    发送密码重置邮件
-    
-    Args:
-        user: User 模型实例
-    """
+    """发送密码重置邮件"""
     token = user.get_reset_password_token()
     reset_url = url_for('auth.reset_password', token=token, _external=True)
     msg = Message(
@@ -27,10 +22,10 @@ def send_password_reset_email(user):
         sender=current_app.config['MAIL_DEFAULT_SENDER'],
         recipients=[user.email]
     )
-    # 渲染邮件模板（HTML 和文本版本）
+
     msg.html = render_template('email/reset_password.html', user=user, token=token, reset_url=reset_url)
     msg.body = render_template('email/reset_password.txt', user=user, token=token, reset_url=reset_url)
     
-    # 异步发送邮件
+
     Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
 
